@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fff9f1" />
+  <title>夜夜班的进制转换练习</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23ffcb54'/%3E%3Ccircle cx='23' cy='31' r='5' fill='%233b4351'/%3E%3Ccircle cx='43' cy='31' r='5' fill='%233b4351'/%3E%3Cpath d='M25 43c5 5 10 5 15 0' fill='none' stroke='%233b4351' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <style>
+    :root { --ink:#171717; --muted:#6d6d73; --cream:#fff; --paper:#ffffff; --line:#e6e6e6; --yellow:#d9272e; --yellow-deep:#ad1f25; --mint:#f3d9da; --mint-deep:#a91f27; --pink:#efb5b7; --purple:#a91f27; --shadow:0 16px 40px rgba(35,20,20,.10); --watermark-opacity:1; --surface-opacity:0; --tab-opacity:0; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); font-family: ui-rounded, "SF Pro Rounded", "PingFang SC", "Microsoft YaHei", sans-serif; background:radial-gradient(circle at 5% 4%, #ffe8e9 0 8%, transparent 25%),radial-gradient(circle at 93% 14%, #f5eeee 0 7%, transparent 24%),var(--cream); min-height:100vh; overflow-x:hidden; }
+    body:before{content:"";position:fixed;inset:0;background:url('夜夜班校徽.png') center/ min(92vw,92vh) auto no-repeat;opacity:var(--watermark-opacity);pointer-events:none;z-index:0;filter:saturate(.95)}
+    button, input, select { font:inherit; }
+    button { border:0; cursor:pointer; }
+    .app { position:relative; z-index:1; width:min(1180px, calc(100% - 36px)); margin:0 auto; padding:22px 0 38px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:20px; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-mark { position:relative; width:55px; height:55px; display:grid; place-items:center; background:var(--yellow); border-radius:19px 19px 23px 18px; box-shadow:inset 0 -5px 0 rgba(235,157,39,.2); transform:rotate(-3deg); }
+    .brand-mark:before,.brand-mark:after { content:""; position:absolute; top:18px; width:7px; height:9px; border-radius:50%; background:var(--ink); }
+    .brand-mark:before { left:16px; } .brand-mark:after { right:16px; }
+    .brand-mark i { position:absolute; bottom:13px; width:15px; height:7px; border-bottom:3px solid var(--ink); border-radius:50%; }
+    h1 { font-size:22px; margin:0; letter-spacing:.02em; } .brand small { color:var(--muted); font-size:12px; font-weight:700; }
+    .stats { display:flex; gap:10px; align-items:center; }
+    .stat { display:flex; align-items:center; gap:7px; padding:10px 13px; background:#fff; border:1px solid var(--line); border-radius:14px; font-size:13px; font-weight:800; box-shadow:0 8px 20px rgba(77,61,41,.05); }
+    .stat b { font-size:16px; color:var(--purple); } .stat.streak b { color:#f38673; }
+    .settings-wrap{position:relative}.settings-btn{padding:10px 13px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);font-size:13px;font-weight:900;box-shadow:0 8px 20px rgba(77,61,41,.05)}.settings-panel{display:none;position:absolute;right:0;top:48px;width:290px;padding:16px;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 35px rgba(25,15,15,.15);z-index:10}.settings-panel.open{display:block}.settings-panel h3{margin:0 0 5px;font-size:15px}.settings-panel p{margin:0 0 13px;color:var(--muted);font-size:11px;font-weight:700}.setting-row{display:grid;grid-template-columns:92px 1fr 42px;align-items:center;gap:8px;margin:11px 0;font-size:12px;font-weight:800}.setting-row input{width:100%;accent-color:#d9272e}.setting-row output{color:#a91f27;text-align:right;font-variant-numeric:tabular-nums}.reset-settings{width:100%;margin-top:5px;padding:8px;border:1px solid #ead2d3;border-radius:9px;background:#fff7f7;color:#a91f27;font-size:12px;font-weight:900}
+    .layout { display:grid; grid-template-columns:minmax(0, 1.6fr) minmax(280px,.82fr); gap:18px; align-items:start; }
+    .card { background:rgba(255,255,255,var(--surface-opacity)); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); }
+    .main-card { padding:25px; position:relative; overflow:hidden; } .main-card:after { content:""; position:absolute; right:-35px; top:-50px; width:160px; height:160px; border-radius:50%; background:#fff2bd; opacity:.6; }
+    .eyebrow { position:relative; z-index:1; display:flex; align-items:center; gap:9px; color:var(--mint-deep); font-size:13px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; }
+    .eyebrow span { width:8px; height:8px; background:var(--mint); border-radius:50%; box-shadow:0 0 0 5px #e4faf1; }
+    .hero-row { display:flex; align-items:end; justify-content:space-between; gap:20px; position:relative; z-index:1; margin:10px 0 19px; }
+    .hero-row h2 { margin:0; font-size:clamp(24px,3vw,36px); line-height:1.12; letter-spacing:-.04em; } .hero-row p { margin:8px 0 0; color:var(--muted); font-size:14px; font-weight:600; }
+    .buddy { width:120px; min-width:120px; height:93px; position:relative; margin-bottom:-5px; }
+    .buddy .body { position:absolute; left:23px; bottom:0; width:78px; height:72px; background:#9fe6c7; border-radius:44% 48% 38% 38%; transform:rotate(-4deg); box-shadow:inset -5px -6px 0 rgba(67,177,138,.16); }
+    .buddy .ear { position:absolute; top:5px; width:30px; height:32px; background:#89dcb9; border-radius:60% 42% 55% 38%; } .buddy .ear.l { left:22px; transform:rotate(-28deg); } .buddy .ear.r { right:17px; transform:rotate(27deg); }
+    .buddy .face { position:absolute; left:42px; top:25px; width:40px; height:26px; } .buddy .eye { position:absolute; top:7px; width:5px; height:7px; border-radius:50%; background:var(--ink); } .buddy .eye.l{left:2px}.buddy .eye.r{right:2px}.buddy .mouth{position:absolute; left:16px; top:15px; width:9px;height:5px;border-bottom:2px solid var(--ink);border-radius:50%}.buddy .blush{position:absolute;top:16px;width:8px;height:5px;background:#ff9c98;border-radius:50%}.buddy .blush.l{left:-5px}.buddy .blush.r{right:-5px}.buddy .spark{position:absolute;right:0;top:3px;color:#f1b436;font-size:20px;transform:rotate(15deg)}
+    .mode-tabs { display:flex; gap:8px; padding:5px; background:rgba(249,245,239,var(--tab-opacity)); border-radius:14px; margin-bottom:18px; position:relative; z-index:1; } .mode-tab { flex:1; padding:11px 10px; color:var(--muted); background:transparent; border-radius:10px; font-weight:800; font-size:13px; } .mode-tab.active { color:var(--ink); background:rgba(255,255,255,var(--tab-opacity)); box-shadow:0 4px 12px rgba(75,62,42,.08); }
+    .converter { display:grid; grid-template-columns:1fr 72px 1fr; align-items:center; gap:13px; position:relative; z-index:1; } .base-box { padding:15px; border:1.5px solid var(--line); border-radius:18px; background:#fff; } .base-box.from { border-color:#beeede; background:#f5fffb; } .base-box.to { border-color:#e0d7ff; background:#faf8ff; }
+    .base-label { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:900; } .tag { padding:4px 7px; border-radius:8px; background:#e1f8ee; color:#299d78; } .to .tag{background:#eeeaff;color:#7967d7}
+    .value-input { width:100%; border:0; outline:0; background:transparent; color:var(--ink); font-size:31px; font-weight:900; letter-spacing:.04em; } .value-input::placeholder{color:#c7c4bc}
+    .swap { width:44px; height:44px; display:grid; place-items:center; border-radius:50%; background:var(--yellow); color:#8d6515; font-size:20px; box-shadow:inset 0 -4px 0 rgba(200,135,26,.16); transition:transform .2s; } .swap:hover{transform:rotate(180deg)}
+    .hint-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:12px 0 21px; position:relative; z-index:1; } .hint { color:var(--muted); font-size:12px; } .clear-btn { color:#8e82d9; background:transparent; font-weight:800; font-size:12px; }
+    .steps { border-top:1px dashed #ded8ce; padding-top:18px; position:relative; z-index:1; } .steps-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; } .steps-title h3 { margin:0; font-size:15px; } .steps-title span { color:var(--muted); font-size:12px; font-weight:700; }
+    .step-list { display:grid; gap:9px; } .step { display:flex; gap:11px; align-items:flex-start; padding:10px 11px; background:#fffaf2; border-radius:13px; font-size:13px; font-weight:700; line-height:1.5; } .step-num { width:23px;height:23px; flex:0 0 23px; display:grid; place-items:center; background:var(--yellow); border-radius:8px; color:#855e17; font-size:12px; } .step code { color:#7163bf; background:#f0ecff; padding:2px 5px; border-radius:5px; font-family:ui-monospace,monospace; }
+    .side { display:grid; gap:18px; } .challenge { padding:20px; background:#fff; } .side-title { display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; } .side-title h3{margin:0;font-size:16px}.tiny-pill{padding:5px 8px;border-radius:9px;background:#fff1d3;color:#b77e1e;font-size:11px;font-weight:900}
+    .question { padding:17px; background:linear-gradient(135deg,#fff6dc,#fffaf5); border:1px solid #f5e5bb; border-radius:17px; } .question .q-label{color:#b98220;font-size:11px;font-weight:900;letter-spacing:.04em}.question strong{display:block;font-size:23px;line-height:1.2;margin:8px 0 14px}.question .q-arrow{color:#d5982c;font-size:20px}
+    .options { display:grid; gap:8px; } .option { padding:11px 12px; text-align:left; border:1px solid #ece6dc; border-radius:12px; color:var(--ink); background:#fff; font-weight:800; font-size:14px; transition:.15s; } .option:hover{border-color:#cfc4ff;background:#faf8ff}.option.correct{border-color:#68cda6;background:#edfff7;color:#188061}.option.wrong{border-color:#ffaaa6;background:#fff1ef;color:#ce625d}.option:disabled{cursor:default}
+    .next-btn { width:100%; margin-top:11px; padding:12px; border-radius:12px; background:var(--ink); color:#fff; font-weight:900; } .next-btn:hover{background:#51586c}.feedback { min-height:20px; margin-top:10px; color:var(--muted); font-size:12px; font-weight:800; }
+    .progress-card { padding:20px; } .progress-card h3{margin:0;font-size:16px}.progress-meta{display:flex;justify-content:space-between;margin:13px 0 7px;color:var(--muted);font-size:12px;font-weight:800}.progress-bar{height:10px;border-radius:9px;background:#f0ece7;overflow:hidden}.progress-fill{height:100%;width:42%;background:linear-gradient(90deg,var(--mint),#bbefce);border-radius:inherit;transition:width .4s}.badges{display:flex;gap:8px;margin-top:16px}.badge{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:#f8f6ff;font-size:20px;filter:grayscale(.8);opacity:.55}.badge.on{filter:none;opacity:1;background:#fff2c9}.footer-note{text-align:center;color:#9b958c;font-size:12px;font-weight:700;margin-top:16px}
+    .toast { position:fixed; left:50%; bottom:22px; transform:translate(-50%, 18px); opacity:0; pointer-events:none; padding:11px 16px; border-radius:13px; background:var(--ink); color:#fff; font-size:13px; font-weight:800; transition:.25s; box-shadow:0 12px 30px rgba(48,53,69,.22); }.toast.show{opacity:1;transform:translate(-50%,0)}
+    .led-lab{position:relative;z-index:1;margin:6px 0 23px;padding:17px;background:#f6f8fc;border:1px solid #dfe5ed;border-radius:20px}.lab-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.lab-head h3{margin:0;font-size:16px}.lab-head span{color:var(--muted);font-size:12px;font-weight:700}.bit-input{width:100%;margin:0 0 12px;padding:9px 12px;border:1px solid #cbd6e3;border-radius:10px;background:#fff;font-family:ui-monospace,Consolas,monospace;font-size:18px;letter-spacing:.15em;font-weight:900;color:var(--ink)}.bit-input:focus{outline:3px solid #ffe5a2}.led-board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;padding:14px 8px;background:#404b5a;border:5px solid #27313f;border-radius:18px}.led-cell{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}.led-cell:nth-child(4){margin-right:5px}.led-cell:nth-child(5){margin-left:5px}.led{width:34px;height:34px;border:3px solid #151e2a;border-radius:50%;background:#66717e;box-shadow:inset 0 3px 5px #404853;transition:.18s}.led.on{background:#ffda65;box-shadow:0 0 12px #ffcc52,0 0 24px #ffdc75,inset 0 2px 4px #fff6ca}.led:hover{transform:scale(1.08)}.led:focus-visible{outline:3px solid white;outline-offset:2px}.led-value{color:#fff;font-family:ui-monospace,Consolas,monospace;font-size:16px;font-weight:900}.led-index{color:#aeb8c5;font-size:11px;font-weight:800}.group-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}.nibble{padding:13px;background:#fff;border:1px solid #dee5ed;border-radius:14px}.nibble.right{border-color:#e5dbff;background:#fdfbff}.nibble-label{color:var(--muted);font-size:12px;font-weight:900}.weight-row,.bit-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;font-family:ui-monospace,Consolas,monospace;font-weight:900}.weight-row{color:#828999;font-size:12px;margin:7px 0 4px}.bit-row span{padding:5px 0;border-radius:7px;background:#edf1f5;color:#717988}.bit-row span.on{background:#ffdf79;color:#6d4e0d}.nibble-sum{margin-top:9px;font-size:13px;font-weight:800;line-height:1.5}.nibble-sum b{font-size:18px;color:#7560d5}.lab-result{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;padding:11px 14px;border-radius:13px;background:#e9faf2;font-weight:900}.lab-result strong{font-size:25px;color:#149969}.lab-result small{color:#548d77;font-size:12px}.lab-tip{margin:9px 1px 0;color:#667586;font-size:12px;font-weight:700;line-height:1.5}.reference{padding:20px}.reference h3{margin:0 0 5px;font-size:16px}.reference p{margin:0 0 11px;color:var(--muted);font-size:12px;line-height:1.5;font-weight:700}.reference-table{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}.ref-cell{padding:7px 3px;border-radius:9px;background:#f6f8fb;text-align:center}.ref-cell.special{background:#fff2d4}.ref-cell small{display:block;color:#858b98;font-size:10px;font-weight:800}.ref-cell b{display:block;color:var(--ink);font-size:15px}.ref-cell.special b{color:#ae6b11}.ref-tip{margin-top:11px;padding:9px 10px;border-radius:10px;background:#fff7e6;color:#9f701d;font-size:12px;font-weight:800;line-height:1.5}
+    .weight-visual{padding:11px 12px;border-radius:12px;background:#f7fbff;border:1px solid #dfeaf4;font-family:ui-monospace,Consolas,monospace;font-weight:900}.weight-visual .weight-line,.weight-visual .digit-line{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center}.weight-visual .weight-line{color:#7560d5;font-size:14px;border-bottom:1px dashed #d7dfe9;padding-bottom:5px;margin-bottom:5px}.weight-visual .digit-line span{padding:4px 0;border-radius:6px;background:#edf1f5;color:#687383}.weight-visual .digit-line span.on{background:#ffdf79;color:#6d4e0d}.weight-visual .weight-caption{margin-top:7px;color:#667586;font-family:inherit;font-size:11px;text-align:center}.place-demo{margin-top:12px;padding:12px;border-radius:13px;background:#f6f8fb;border:1px dashed #dce3ec}.place-demo strong{display:block;font-size:13px;margin-bottom:8px}.place-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;font-family:ui-monospace,Consolas,monospace;font-weight:900}.place-grid small{display:block;color:#89909d;font-size:10px}.place-grid b{display:block;font-size:18px;color:#7560d5}.place-grid em{display:block;font-size:11px;color:#5f6b7b;font-style:normal;margin-top:3px}.place-rule{margin-top:8px;color:#667586;font-size:11px;font-weight:700;line-height:1.5}
+    .weight-visual .weight-line span.active{color:#d9272e;animation:weightPulse 1.2s ease-in-out infinite alternate}@keyframes weightPulse{from{transform:translateY(0);opacity:.55}to{transform:translateY(-3px);opacity:1;text-shadow:0 3px 8px rgba(217,39,46,.28)}}.binary-group-title{margin:8px 0 5px;color:#a91f27;font-size:12px;font-weight:900}.take-sum{margin-top:6px;color:#4e5a68;font-size:12px;font-weight:800}.take-sum b{color:#a91f27;font-size:15px}
+    .lab-result{display:block}.lab-result-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.lab-result-head span{font-size:13px}.result-steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.result-step{padding:6px 8px;border-radius:8px;background:#fff;color:#548d77;font-size:11px;font-weight:800}
+    .led.on{background:#ef343b;box-shadow:0 0 12px #e22b32,0 0 24px #f18387,inset 0 2px 4px #ffd4d6}.progress-fill{background:linear-gradient(90deg,#d9272e,#f08a8e)}.badge.on{background:#ffe1e2}
+    .code-lab{position:relative;z-index:1;margin:14px 0 20px;padding:18px;border:1px solid #d9dfe8;border-radius:20px;background:rgba(255,255,255,.74)}.code-lab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}.code-lab-head h3{margin:0;font-size:19px}.code-lab-head p{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:700}.chip-tag{padding:6px 9px;border-radius:9px;background:#202934;color:#fff;font-family:ui-monospace,monospace;font-size:11px;font-weight:900}.code-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr);gap:14px}.code-box{display:flex;flex-direction:column;gap:9px}.code-editor{width:100%;min-height:245px;resize:vertical;padding:14px;border:1px solid #26313e;border-radius:13px;background:#1d2631;color:#f8f0df;font:14px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2}.code-editor:focus{outline:3px solid #f2c3c5}.code-actions{display:flex;flex-wrap:wrap;gap:8px}.code-btn{padding:9px 12px;border-radius:10px;background:#fff;border:1px solid #e6cfd0;color:#a91f27;font-size:13px;font-weight:900}.code-btn.primary{background:#d9272e;color:#fff;border-color:#d9272e}.code-btn.dark{background:#202934;color:#fff;border-color:#202934}.sim-panel{padding:14px;border:1px solid #ead7d8;border-radius:14px;background:rgba(255,249,249,.84)}.sim-panel h4{margin:0 0 11px;font-size:15px}.pin-map{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.pin{padding:8px 4px;border-radius:9px;background:#fff;text-align:center;border:1px solid #e8e8e8}.pin b{display:block;color:#a91f27;font:700 13px ui-monospace,monospace}.pin small{display:block;margin-top:3px;color:#737984;font-size:10px;font-weight:800}.p1-value{display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px;padding:9px 11px;border-radius:10px;background:#202934;color:#fff;font-family:ui-monospace,monospace;font-weight:900}.p1-value strong{color:#ffcf54;font-size:20px}.sim-status{min-height:54px;padding:9px 10px;border-radius:10px;background:#fff;color:#66717d;font-size:12px;font-weight:800;line-height:1.5}.code-note{margin:10px 0 0;color:#707783;font-size:11px;font-weight:700;line-height:1.5}.code-log{max-height:86px;overflow:auto;margin-top:10px;padding:8px 10px;border-radius:9px;background:#f1f3f5;color:#555d69;font:11px/1.5 ui-monospace,monospace}.sim-running{animation:simPulse 1s ease-in-out infinite alternate}@keyframes simPulse{from{box-shadow:0 0 0 rgba(217,39,46,0)}to{box-shadow:0 0 0 5px rgba(217,39,46,.15)}}
+    /* 课堂投影可读性：统一放大关键文字，减少空白 */
+    body{font-size:16px;line-height:1.45}.app{padding-top:18px}.brand h1{font-size:28px}.brand small{font-size:14px}.stat{font-size:16px;padding:9px 14px}.stat b{font-size:20px}.settings-btn{font-size:15px}.main-card{padding:28px}.eyebrow{font-size:15px}.hero-row{margin:8px 0 14px}.hero-row h2{font-size:clamp(30px,3.2vw,46px)}.hero-row p{font-size:16px}.mode-tab{font-size:16px;padding:13px 10px}.base-label{font-size:14px}.value-input{font-size:40px}.hint{font-size:14px}.clear-btn{font-size:14px}.steps-title h3{font-size:20px}.steps-title span{font-size:14px}.step{font-size:16px;padding:11px 13px}.side .card{padding:24px}.side-title h3,.reference h3,.progress-card h3{font-size:20px}.reference p,.progress-meta{font-size:14px}.ref-cell small{font-size:12px}.ref-cell b{font-size:19px}.ref-tip{font-size:14px}.question .q-label{font-size:14px}.question strong{font-size:30px}.option{font-size:17px;padding:13px 14px}.next-btn{font-size:17px;padding:14px}.feedback{font-size:14px}.lab-head h3{font-size:18px}.lab-head span{font-size:14px}.bit-input{font-size:22px;padding:11px 14px}.nibble-label{font-size:14px}.weight-row{font-size:14px}.bit-row span{font-size:18px;padding:7px 0}.nibble-sum{font-size:15px}.lab-result-head span{font-size:16px}.lab-tip{font-size:14px}.footer-note{font-size:14px}
+    .app{min-height:100vh}.layout{align-items:start}
+    @media (max-height:850px) and (min-width:1000px){.app{padding-top:10px;padding-bottom:18px}.topbar{margin-bottom:10px}.main-card{padding:20px}.hero-row h2{font-size:clamp(27px,2.7vw,38px)}.hero-row p{font-size:14px}.led-lab{margin-bottom:14px;padding:13px}.side{gap:14px}.side .card{padding:18px}.step{padding:8px 10px;font-size:14px}.footer-note{margin-top:8px}}
+    @media(min-width:1400px){.app{width:calc(100% - 72px);max-width:none;padding-top:28px}.layout{grid-template-columns:minmax(0,1.75fr) minmax(390px,.9fr);gap:24px}.main-card{padding:30px}.side{gap:24px}.side .card{padding:25px}.hero-row h2{font-size:clamp(31px,2.6vw,44px)}.value-input{font-size:36px}.led{width:40px;height:40px}.led-board{padding:17px 18px}.footer-note{font-size:13px}}
+    @media(max-width:820px){.layout{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr}.hero-row h2{font-size:29px}.buddy{transform:scale(.85);transform-origin:right bottom}} @media(max-width:560px){.app{width:min(100% - 22px, 500px);padding-top:14px}.topbar{align-items:flex-start}.stats{gap:6px}.stat{padding:8px 9px}.stat span{display:none}.main-card{padding:18px}.hero-row{align-items:center}.buddy{width:92px;min-width:92px;transform:scale(.7);margin-right:-12px}.converter{grid-template-columns:1fr 42px 1fr;gap:7px}.value-input{font-size:23px}.swap{width:37px;height:37px}.mode-tab{font-size:12px;padding:10px 4px}.side{grid-template-columns:1fr}.question strong{font-size:21px}}
+    @media(max-width:560px){.lab-head{align-items:flex-start;flex-direction:column;gap:3px}.led-board{gap:2px;padding:10px 3px}.led{width:27px;height:27px}.led-index{font-size:9px}.group-grid{gap:6px}.nibble{padding:9px}.nibble-sum{font-size:11px}.nibble-sum b{font-size:16px}.reference-table{grid-template-columns:repeat(8,1fr)}}
+
+    .page-nav{display:flex;gap:10px;margin:6px 0 20px}.page-tab{flex:1;padding:13px 18px;border:1px solid #e7cacc;border-radius:14px;background:rgba(255,255,255,.82);color:#9d252b;font-size:17px;font-weight:900}.page-tab.active{background:#d9272e;border-color:#d9272e;color:#fff;box-shadow:0 8px 20px rgba(160,25,32,.2)}.page-panel[hidden],.layout[hidden]{display:none!important}.page-intro{margin:8px 0 18px}.page-intro h2{margin:10px 0 3px;font-size:clamp(27px,3vw,42px)}.page-intro p{margin:0;color:#68717d;font-size:16px;font-weight:700}.sim-led-card{padding:22px;margin-bottom:18px}.sim-led-card .led-board,.key-stage .led-board{max-width:1100px}.base-readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}.base-readouts>div{padding:14px;border:1px solid #e2d5d6;border-radius:13px;background:rgba(255,255,255,.87)}.base-readouts small{display:block;color:#727984;font-size:13px;font-weight:800}.base-readouts strong{display:block;margin-top:5px;color:#202934;font:900 clamp(20px,2vw,30px) ui-monospace,Consolas,monospace}.sim-explain{margin:0;font-size:15px;font-weight:800;color:#a3262d}.sim-page>.code-lab{margin:0;background:rgba(255,255,255,.88)}.key-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.key-grid>.card{padding:23px}.key-grid h3{margin:0 0 14px;font-size:21px}.key-pin-label{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:900}.key-pin-label select{padding:9px;border-radius:9px;border:1px solid #dfb9bd;background:#fff;font-weight:800}.board-note{color:#6d7480;font-size:13px;line-height:1.5}.physical-key{display:flex;flex-direction:column;align-items:center;justify-content:center;width:130px;height:130px;margin:20px auto;border:9px solid #9fadb9;border-radius:50%;background:#e9edf1;box-shadow:0 10px 0 #66717e,0 16px 25px #bcc5cb;color:#202934;cursor:pointer;user-select:none;touch-action:none}.physical-key span{font-size:28px;font-weight:900}.physical-key small{font-size:13px}.physical-key.pressed{transform:translateY(8px);background:#ffce66;box-shadow:0 2px 0 #66717e,0 7px 15px #bcc5cb}.key-level{text-align:center;margin-bottom:15px;font-size:17px;font-weight:900}.key-code .code-editor{min-height:350px}.key-code p{color:#6e7480}.key-code .sim-status{margin-top:15px}.key-led-board{margin:12px 0}.key-stage .led{pointer-events:none}
+    .buzzer-sim{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;margin-top:12px;padding:16px;border:1px solid #e7c7c8;border-radius:14px;background:linear-gradient(110deg,#fff7df,#fff)}.buzzer-device{position:relative;width:118px;height:78px;display:grid;place-items:center;border-radius:50% 50% 42% 42%;background:linear-gradient(#202934,#4d5967);border:4px solid #131a23;box-shadow:inset 0 -10px 0 #18212c,0 6px 0 #9ba4ae}.buzzer-device:before{content:"";position:absolute;top:12px;width:74px;height:36px;border-radius:50%;background:#101720;border:2px solid #657384}.buzzer-device span{position:relative;z-index:1;color:#ffda65;font:900 12px ui-monospace,monospace;margin-top:22px}.buzzer-device i{position:absolute;bottom:-10px;left:20px;width:10px;height:17px;background:#d9272e;box-shadow:67px 0 #202934}.sound-waves{display:flex;gap:4px;color:#d9272e;font-size:27px;font-weight:900;letter-spacing:-8px}.sound-waves span{opacity:.2;transform:scale(.8)}.buzzer-sim.active .sound-waves span{animation:soundWave 1s ease-in-out infinite}.buzzer-sim.active .sound-waves span:nth-child(2){animation-delay:.18s}.buzzer-sim.active .sound-waves span:nth-child(3){animation-delay:.36s}.buzzer-sim strong{display:block;color:#a91f27;font-size:17px}.buzzer-sim small{display:block;margin-top:4px;color:#69727f;font-size:12px;font-weight:800}@keyframes soundWave{0%,100%{opacity:.18;transform:scale(.8)}50%{opacity:1;transform:scale(1.12)}}
+    .code-example-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}.code-example-tab{flex:1 1 150px;padding:12px 14px;border:1px solid #e5cfd0;border-radius:12px;background:#fff;color:#93282e;font-size:14px;font-weight:900}.code-example-tab.active{background:#d9272e;color:#fff;border-color:#d9272e;box-shadow:0 8px 18px rgba(170,30,38,.18)}.code-example-panel{padding:26px;background:rgba(255,255,255,.92)}.code-sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}.code-sheet-head h3{margin:5px 0 4px;font-size:25px}.code-sheet-head p{margin:0;color:#68717d;font-size:15px;font-weight:700}.keil-editor{width:100%;min-height:470px;resize:vertical;padding:20px;border:4px solid #26313e;border-radius:12px;background:#17212c;color:#f9efd9;font:16px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;white-space:pre}.keil-editor:focus{outline:3px solid #efb5b7}.standalone-output{margin-top:16px;min-height:150px;padding:18px;border:1px solid #ead7d8;border-radius:16px;background:#fff8f3}.standalone-output h4{margin:0 0 8px;font-size:18px;color:#8e2930}.standalone-output p{margin:5px 0;color:#5f6875;font-size:14px;line-height:1.6;font-weight:700}.standalone-led{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;padding:12px;background:#404b5a;border:4px solid #27313f;border-radius:14px}.standalone-led .led-cell{display:flex;flex-direction:column;align-items:center;gap:4px}.standalone-led .led{width:26px;height:26px}.standalone-led small{color:#fff;font:800 11px ui-monospace,monospace}.standalone-buzzer{display:flex;align-items:center;gap:22px;padding:14px;border-radius:13px;background:#fff4d8}.standalone-buzzer .buzzer-device{flex:none}.standalone-buzzer .sound-waves{font-size:30px}.standalone-buzzer.active .sound-waves span{animation:soundWave 1s ease-in-out infinite}.standalone-buzzer strong{display:block;color:#a91f27;font-size:20px}.standalone-buzzer small{display:block;margin-top:4px;color:#68717d;font-weight:800}
+    .project-card{padding:26px}.project-card h3{font-size:24px;margin:0 0 8px}.project-card>p{font-size:16px;line-height:1.65}.teaching-box{margin-top:18px;padding:18px 20px;border:1px solid #ead8d8;border-radius:16px;background:rgba(255,250,247,.9)}.teaching-box>b{display:block;color:#a91f27;font-size:17px;margin-bottom:8px}.teaching-box ol{margin:8px 0 12px;padding-left:24px;line-height:1.8;font-size:15px;font-weight:700}.teaching-box pre{margin:12px 0 0;padding:14px;overflow:auto;border-radius:11px;background:#202934;color:#fff3db;font:14px/1.55 ui-monospace,Consolas,monospace}.code-explain{margin:12px 0 0;color:#5f6875;font-size:14px;line-height:1.65;font-weight:700}.tutorial-page{padding-bottom:16px}.tutorial-hero{padding:26px;background:linear-gradient(135deg,rgba(255,246,236,.96),rgba(255,255,255,.88));border:1px solid #ecd9d8;border-radius:22px;box-shadow:var(--shadow)}.tutorial-hero h2{margin:6px 0;font-size:clamp(28px,3vw,42px)}.tutorial-hero p{margin:0;color:#68717d;font-size:16px;font-weight:700}.tutorial-flow{display:grid;grid-template-columns:repeat(9,1fr);gap:7px;margin:18px 0}.tutorial-flow span{padding:10px 6px;text-align:center;border-radius:10px;background:#fff;border:1px solid #e4d7d8;color:#8e2930;font-size:12px;font-weight:900}.tutorial-flow span b{display:block;margin:auto auto 5px;width:24px;height:24px;line-height:24px;border-radius:50%;background:#d9272e;color:#fff}.tutorial-code{margin:18px 0;padding:20px;border-radius:18px;background:#202934;color:#fff3db}.tutorial-code h3{margin:0 0 10px;color:#fff;font-size:20px}.tutorial-code pre{margin:0;white-space:pre-wrap;font:14px/1.6 ui-monospace,Consolas,monospace}.tutorial-notice{margin:18px 0;padding:16px 18px;border-left:5px solid #d9272e;border-radius:12px;background:#fff3f2;color:#6d2a2e;font-size:15px;line-height:1.7;font-weight:800}.tutorial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.tutorial-step{overflow:hidden;background:rgba(255,255,255,.9);border:1px solid #e5d9da;border-radius:18px;box-shadow:0 10px 24px rgba(50,24,24,.08)}.tutorial-step img{display:block;width:100%;height:220px;object-fit:contain;background:#fff4f3}.tutorial-step div{padding:15px 17px}.tutorial-step h3{margin:0 0 6px;font-size:18px;color:#9d252b}.tutorial-step p{margin:0;color:#5f6875;font-size:14px;line-height:1.65;font-weight:700}.tutorial-checklist{margin-top:18px;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,.9);border:1px solid #e5d9da}.tutorial-checklist h3{margin:0 0 8px;font-size:20px}.tutorial-checklist ul{margin:0;padding-left:23px;color:#5f6875;font-size:15px;line-height:1.8;font-weight:700}
+    @media(max-width:850px){.code-grid,.key-grid{grid-template-columns:1fr}.page-tab{font-size:14px;padding:11px 5px}.base-readouts strong{font-size:21px}}@media(max-width:560px){.page-nav{gap:5px}.page-tab{font-size:12px}.base-readouts{gap:5px}.base-readouts>div{padding:9px}.base-readouts small{font-size:10px}.base-readouts strong{font-size:16px}.key-grid>.card,.sim-led-card{padding:15px}}
+
+    .project-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 18px}.project-tab{padding:12px 8px;border:1px solid #e6cacc;border-radius:12px;background:rgba(255,255,255,.84);color:#9d252b;font-size:14px;font-weight:900}.project-tab.active{background:#d9272e;color:#fff;border-color:#d9272e}.ind-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.ind-key{padding:15px 8px;border:0;border-radius:13px;background:#eef1f4;color:#283340;font-weight:900;box-shadow:0 4px 0 #aeb7c0}.ind-key.pressed{transform:translateY(4px);background:#ffce66;box-shadow:none}.project-card{padding:25px}.project-card h3{margin:0 0 10px;font-size:22px}.counter-key{display:block;width:170px;height:80px;margin:22px auto 16px;border:0;border-radius:16px;background:#202934;color:#fff;font-weight:900;font-size:21px;box-shadow:0 6px 0 #0f141b}.counter-key:active{transform:translateY(5px);box-shadow:none}.counter-display,.scan-display{display:grid;place-items:center;min-height:112px;border-radius:15px;background:#202934;color:#ffce66;font:900 56px ui-monospace,monospace;letter-spacing:.12em}.counter-display{width:220px;margin:auto}.matrix-layout{display:grid;grid-template-columns:minmax(300px,1fr) minmax(180px,.7fr);gap:20px;align-items:center}.matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.matrix button{padding:18px 8px;border:1px solid #e5ced0;border-radius:12px;background:#fff7f6;color:#9d252b;font-size:20px;font-weight:900}.matrix button:active{background:#ffce66}.seg-display{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:18px;margin:20px 0;background:#202934;border-radius:14px}.seg-display span{display:grid;place-items:center;min-height:78px;border-radius:8px;background:#090d12;color:#ff474d;font:900 48px ui-monospace,monospace;text-shadow:0 0 12px #ff3038}.seg-input{display:flex;align-items:center;gap:12px;font-weight:900}.seg-input input{padding:12px;border:1px solid #e4cfd0;border-radius:10px;font:900 22px ui-monospace,monospace}.project-panel[hidden]{display:none!important}@media(max-width:700px){.project-tabs{grid-template-columns:repeat(2,1fr)}.matrix-layout{grid-template-columns:1fr}.seg-display span{font-size:29px;min-height:56px}}
+
+    .side-steps{padding:22px;margin-top:18px;border:1px solid #e5dfe0;border-radius:20px;background:rgba(255,255,255,.78)}.side-steps .step{font-size:14px}.side-steps .step-list{gap:10px}.teaching-box{margin-top:20px;padding:16px;border:1px dashed #e4b8ba;border-radius:14px;background:#fff8f7;color:#5f6671}.teaching-box b{color:#a3262d}.teaching-box ol{margin:10px 0;padding-left:22px;line-height:1.8;font-size:14px;font-weight:700}.teaching-box pre{margin:10px 0 0;padding:12px;border-radius:10px;background:#202934;color:#ffe0a0;font:13px/1.55 ui-monospace,Consolas,monospace;white-space:pre-wrap}.side-steps .steps-title{margin-bottom:14px}
+    @media(max-width:820px){.side-steps{margin-top:0}.side-steps .step{font-size:13px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark" aria-hidden="true"><i></i></div><div><h1>夜夜班的进制转换练习</h1><small>单片机 8 位 LED · 看懂二进制、十进制和十六进制</small></div></div>
+      <div class="stats" aria-label="学习统计"><div class="settings-wrap"><button class="settings-btn" id="settingsBtn" aria-expanded="false">⚙ 背景设置</button><div class="settings-panel" id="settingsPanel"><h3>背景透明度</h3><p>拖动滑块，页面会立即更新；设置会保存在本机。</p><label class="setting-row"><span>校徽背景</span><input id="watermarkRange" type="range" min="0" max="100" value="100"><output id="watermarkValue">100%</output></label><label class="setting-row"><span>内容卡片</span><input id="surfaceRange" type="range" min="0" max="100" value="0"><output id="surfaceValue">0%</output></label><label class="setting-row"><span>选项卡</span><input id="tabRange" type="range" min="0" max="100" value="0"><output id="tabValue">0%</output></label><button class="reset-settings" id="resetSettings">恢复默认</button></div></div></div>
+    </header>
+    <nav class="page-nav" aria-label="课堂模块">
+      <button class="page-tab active" data-page="learn" aria-current="page">① 进制学习</button>
+      <button class="page-tab" data-page="p1">② P1 灯光仿真</button>
+      <button class="page-tab" data-page="codes">③ 课堂代码示例</button>
+      <button class="page-tab" data-page="key">④ 按键与数码管实验</button>
+      <button class="page-tab" data-page="tutorial">⑤ 实操教程</button>
+    </nav>
+    <div class="layout" id="learnPage" data-page-panel="learn">
+      <section class="card main-card" aria-label="进制转换练习区">
+        <div class="eyebrow"><span></span>单片机 8 位 LED 训练营</div>
+        <div class="hero-row"><div><h2>点亮 8 个 LED，<br>秒懂十六进制！</h2><p>点灯或输入 8 位二进制，试着把它切成左右两组。</p></div><div class="buddy" aria-label="小伙伴插画"><div class="ear l"></div><div class="ear r"></div><div class="body"></div><div class="face"><i class="eye l"></i><i class="eye r"></i><i class="mouth"></i><i class="blush l"></i><i class="blush r"></i></div><b class="spark">✦</b></div></div>
+        <section class="led-lab" aria-label="8位LED位权练习"><div class="lab-head"><h3>① 点灯仿真：低电平 0 点亮，1 熄灭</h3><span>从左到右：P1.7 → P1.0</span></div><input id="bitInput" class="bit-input" aria-label="输入8位二进制" inputmode="numeric" maxlength="9" value="1010 1100" /><div class="led-board" id="ledBoard"></div><div class="group-grid"><div class="nibble"><div class="nibble-label">② 左 4 位 · 高半字节</div><div class="weight-row"><span>8</span><span>4</span><span>2</span><span>1</span></div><div class="bit-row" id="leftBits"></div><div class="nibble-sum" id="leftSum"></div></div><div class="nibble right"><div class="nibble-label">③ 右 4 位 · 低半字节</div><div class="weight-row"><span>8</span><span>4</span><span>2</span><span>1</span></div><div class="bit-row" id="rightBits"></div><div class="nibble-sum" id="rightSum"></div></div></div><div class="lab-result"><div class="lab-result-head"><span>④ 最稳妥路线：先十进制，再查表</span><strong id="hexResult">AC₁₆</strong></div><div class="result-steps" id="resultSteps"></div></div><p class="lab-tip" id="labTip">每组只看 8、4、2、1；哪一位是 1，就把那个位权拿下来相加。</p></section>
+        <nav class="mode-tabs" aria-label="转换模式"><button class="mode-tab active" data-mode="bin-dec">二进制 ↔ 十进制</button><button class="mode-tab" data-mode="dec-hex">十进制 ↔ 十六进制</button><button class="mode-tab" data-mode="hex-bin">十六进制 ↔ 二进制</button></nav>
+        <div class="converter"><div class="base-box from"><div class="base-label"><span id="fromName">二进制</span><span class="tag" id="fromTag">BIN · 2</span></div><input id="fromInput" class="value-input" inputmode="text" autocomplete="off" value="1011" aria-label="输入待转换的数值" /></div><button class="swap" id="swapBtn" aria-label="交换输入和输出进制">↔</button><div class="base-box to"><div class="base-label"><span id="toName">十进制</span><span class="tag" id="toTag">DEC · 10</span></div><input id="toInput" class="value-input" readonly value="11" aria-label="转换结果" /></div></div>
+        <div class="hint-row"><span class="hint" id="hint">只允许输入 0 和 1</span><button class="clear-btn" id="clearBtn">清空输入</button></div>
+      </section>
+      <aside class="side">
+        <section class="card reference"><h3>十进制 ↔ 十六进制对照表</h3><p>每 4 位二进制求和后，在这里找对应的十六进制符号。</p><div class="reference-table" id="referenceTable"></div><div class="ref-tip">记住：0～9 原样不变；10 开始改用字母：10=A，11=B，12=C，13=D，14=E，15=F。</div><div class="place-demo"><strong>生活中的十进制：521 怎么拆？</strong><div class="place-grid"><span><small>百位 · 10²</small><b>5</b><em>5 × 100</em></span><span><small>十位 · 10¹</small><b>2</b><em>2 × 10</em></span><span><small>个位 · 10⁰</small><b>1</b><em>1 × 1</em></span></div><div class="place-rule">521 = 5×100 + 2×10 + 1×1 = 521。位权就是：多少进制，就以多少为底；从右往左，0 次方一直增加。</div></div></section>
+        <div class="steps side-steps"><div class="steps-title"><h3>拆解给你看</h3><span id="stepsCaption">1011₂ = 11₁₀</span></div><div class="step-list" id="stepsList"></div></div>
+      </aside>
+    </div>
+    <section class="page-panel sim-page" id="p1Page" data-page-panel="p1" hidden>
+      <div class="page-intro"><span class="eyebrow">STC89C52RC · P1 端口</span><h2>写 C 代码，马上看见灯光</h2><p>当前端口值会同时显示二进制、十进制与十六进制。0 为低电平，对应 LED 点亮。</p></div>
+      <div class="card sim-led-card"><div class="lab-head"><h3>8 个 LED · P1.7 → P1.0</h3><span>代码运行时实时更新</span></div><div class="led-board" id="simLedBoard"></div><div class="base-readouts"><div><small>二进制 BIN</small><strong id="simBin">1010 1100</strong></div><div><small>十进制 DEC</small><strong id="simDec">172</strong></div><div><small>十六进制 HEX</small><strong id="simHex">AC</strong></div></div><p class="sim-explain" id="simExplain">高四位 1010 → A，低四位 1100 → C；所以 P1 = AC₁₆。</p></div>
+        <section class="code-lab" aria-label="P1端口C语言仿真工作台"><div class="code-lab-head"><div><h3>P1 端口 C 代码仿真</h3><p>支持真实 Keil C51 的头文件、延时和 INTRINS.H 循环移位示例，改完代码即可反复演示。</p></div><span class="chip-tag">STC89C52RC · PORT 1</span></div><div class="code-grid"><div class="code-box"><textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="C语言代码编辑器">//程序: lsd_khs.c
+//功能: 采用库函数实现流水灯的控制，P1口流水灯
+#include &lt;STC89C52RC.H&gt;
+#include &lt;INTRINS.H&gt;
+
+void delay(unsigned int i)
+{
+    while(i--);
+}
+
+void main()
+{
+    P1=0xfe;
+    while(1)
+    {
+        delay(40000);
+        P1=_crol_(P1,1);
+    }
+}</textarea>
+
+void delay(unsigned int t){
+  unsigned int i, j;
+  for(i=t; i&gt;0; i--)
+    for(j=110; j&gt;0; j--);
+}
+
+void main(){
+  while(1){
+    P1 = 0xFE;  // P1.0 低电平，LED0 亮
+    delay(300);
+    P1 = 0xFD;  // P1.1 低电平，LED1 亮
+    delay(300);
+    P1 = 0xFB;  // P1.2 低电平，LED2 亮
+    delay(300);
+  }
+}</textarea><div class="code-actions"><button class="code-btn primary" id="runCode">▶ 运行仿真</button><button class="code-btn dark" id="stopCode">■ 停止</button><button class="code-btn" id="loadBlink">加载闪烁示例</button><button class="code-btn" id="loadFlow">加载流水灯示例</button></div></div><div class="sim-panel"><h4>开发板 P1 引脚映射</h4><div class="pin-map"></div><div class="p1-value"><span>当前 P1</span><strong id="p1Hex">0xAC</strong></div><div class="sim-status" id="simStatus">等待运行代码。当前支持 P1 赋值、取反、移位、按位运算和 delay()。</div><div class="code-log" id="codeLog">仿真日志：尚未运行</div><p class="code-note">说明：这是课堂快速仿真器，不替代 Keil 编译器；先用它看懂 P1 端口逻辑，再下载到真实 STC89C52RC 开发板。</p></div></div></section>
+    </section>
+    <section class="page-panel code-examples-page" id="codesPage" data-page-panel="codes" hidden>
+      <div class="page-intro"><span class="eyebrow">KEIL C51 · 独立代码练习页</span><h2>课堂代码示例</h2><p>每次只打开一个程序，代码按 Keil 习惯分行显示；先读懂，再修改，再下载到开发板。</p></div>
+      <nav class="code-example-tabs" aria-label="课堂代码"><button class="code-example-tab active" data-code-example="flow-lib">项目一 流水灯</button><button class="code-example-tab" data-code-example="blink-pair">不同位置灯闪烁</button><button class="code-example-tab" data-code-example="key-led">S2 按键控 LED</button><button class="code-example-tab" data-code-example="buzzer">S2 按键控蜂鸣器</button><button class="code-example-tab" data-code-example="turn">S2/S3 转向灯</button></nav>
+      <section class="code-example-panel card" id="standaloneCodePanel">
+        <div class="code-sheet-head"><div><span class="eyebrow" id="standaloneEyebrow">项目一 · P1 流水灯</span><h3 id="standaloneTitle">库函数循环左移流水灯</h3><p id="standaloneDesc">P1.0 点亮后，每次调用 _crol_(P1,1) 向下一个灯位移动。</p></div><span class="chip-tag">KEIL C51</span></div>
+        <textarea id="standaloneCode" class="keil-editor" spellcheck="false" aria-label="独立课堂代码"></textarea>
+        <div class="code-actions"><button class="code-btn primary" id="runStandalone">▶ 运行本页仿真</button><button class="code-btn" id="resetStandalone">恢复本页代码</button><button class="code-btn" id="copyStandalone">复制代码</button></div>
+        <div class="standalone-output" id="standaloneOutput"></div>
+      </section>
+    </section>
+    <section class="page-panel key-page" id="keyPage" data-page-panel="key" hidden>
+      <div class="page-intro"><span class="eyebrow">TX-1C / MCU-2B · 项目二至项目五</span><h2>按键、计数、矩阵键盘和数码管</h2><p>按说明书里的端口连接做课堂仿真：独立按键 S1～S4 接 P1.0～P1.3，低电平表示按下。</p></div>
+      <nav class="project-tabs" aria-label="实验项目"><button class="project-tab active" data-project="key">项目二 独立按键</button><button class="project-tab" data-project="counter">项目三 按键计数</button><button class="project-tab" data-project="matrix">项目四 4×4 矩阵</button><button class="project-tab" data-project="display">项目五 数码管</button></nav>
+      <section class="project-panel" data-project-panel="key"><div class="key-grid"><div class="card key-stage"><h3>S1～S4 · P1.0～P1.3</h3><p class="board-note">按键为低电平有效；按住按钮就相当于把对应 P1 位拉到 0。</p><div class="ind-keys" id="indKeys"></div><div class="key-level" id="keyLevel">松开：P1.0～P1.3 均为 1</div><div class="key-led-board led-board" id="keyLedBoard"></div><div class="base-readouts"><div><small>二进制 BIN</small><strong id="keyBin">1111 1111</strong></div><div><small>十进制 DEC</small><strong id="keyDec">255</strong></div><div><small>十六进制 HEX</small><strong id="keyHex">FF</strong></div></div></div><div class="card key-code"><h3>独立按键 C 代码</h3><textarea id="keyCodeEditor" class="code-editor" spellcheck="false" aria-label="独立按键C代码编辑器">#include &lt;reg52.h&gt;
+sbit S1 = P1^0;
+void main(){
+  while(1){
+    if(S1 == 0) P1 = 0x00;
+    else P1 = 0xFF;
+  }
+}</textarea><div class="code-actions"><button class="code-btn primary" id="runKeyCode">▶ 运行按键实验</button><button class="code-btn" id="resetKeyCode">恢复示例</button></div><div class="sim-status" id="keyStatus">按住 S1～S4 观察 P1 和 LED。</div></div></div></section>
+      <section class="project-panel" data-project-panel="counter" hidden><div class="card project-card"><h3>项目三：按键计数</h3><p>每按下一次 S1，计数加 1；松开后等待下一次按键，避免一次长按重复计数。</p><button class="counter-key" id="counterKey">S1<br><small>点击计数 +1</small></button><div class="counter-display" id="counterDisplay">00</div><div class="code-log" id="counterLog">P1.0 = 1（松开） · 等待按下</div><div class="teaching-box"><b>拆解步骤</b><ol><li>读取 S1，按下时 P1.0=0。</li><li>检测到下降沿后只加 1 次。</li><li>松开后等待下一次按下。</li></ol><pre>#include &lt;reg52.h&gt;
+unsigned int count = 0;
+sbit S1 = P1^0;
+void delay_ms(unsigned int t){ unsigned int i,j; for(i=0;i&lt;t;i++) for(j=0;j&lt;120;j++); }
+void main(){
+  while(1){
+    if(S1 == 0){ delay_ms(10); if(S1 == 0){ count++; while(S1 == 0); } }
+    P0 = count % 10;
+  }
+}</pre><p class="code-explain">关键是“按下确认 → 只加一次 → 等待松开”。真实板上可把 count 拆成个位、十位，再送给数码管段码表。</p></div><p class="board-note">对应说明书中的“按键计数”：计数结果由数码管显示。</p></div></section>
+      <section class="project-panel" data-project-panel="matrix" hidden><div class="card project-card"><h3>项目四：4×4 矩阵键盘</h3><p>矩阵键盘的 8 根线接 P1.0～P1.7。点击按键，观察行列扫描得到的键值。</p><div class="matrix-layout"><div class="matrix" id="matrixKeys"></div><div><div class="scan-display" id="matrixDisplay">等待按键</div><div class="code-log" id="matrixLog">行线/列线均为高电平 1</div></div></div><div class="teaching-box"><b>拆解步骤</b><ol><li>依次把一行拉低。</li><li>读取四根列线是否出现低电平。</li><li>行号和列号组合成键值。</li></ol><pre>#include &lt;reg52.h&gt;
+unsigned char key_scan(void){
+  unsigned char row;
+  for(row=0; row&lt;4; row++){
+    P1 = (unsigned char)~(1 &lt;&lt; row);
+    if((P1 &amp; 0xF0) != 0xF0){ delay_ms(10); return (row &lt;&lt; 2) | ((~P1 &gt;&gt; 4) &amp; 0x0F); }
+  }
+  return 0xFF;
+}
+void main(){ unsigned char key; while(1){ key=key_scan(); if(key!=0xFF) P0=key; } }</pre><p class="code-explain">矩阵键盘不是同时读 16 个按键，而是逐行拉低、读取列线；行号和列号合成一个键值。</p></div><p class="board-note">课堂讲解重点：逐行拉低，再读取列线；检测到低电平后完成消抖。</p></div></section>
+      <section class="project-panel" data-project-panel="display" hidden><div class="card project-card"><h3>项目五：定时器、中断与六位数码管</h3><p>先用数码管理解段码和位选，再用项目五 PPT 中的定时器 0 中断替代长时间 Delay。</p><div class="seg-display" id="segDisplay"><span>0</span><span>0</span><span>0</span><span>0</span><span>0</span><span>0</span></div><label class="seg-input">输入 0～999999 <input id="segInput" value="123456" inputmode="numeric" maxlength="6"></label><div class="code-actions"><button class="code-btn primary" id="runSeg">▶ 开始动态显示</button><button class="code-btn" id="stopSeg">■ 停止扫描</button></div><div class="sim-status" id="segStatus">P0 段码：等待扫描；74HC138：等待位选。</div><div class="teaching-box"><b>数码管动态显示代码</b><ol><li>P0 先输出当前数字的段码。</li><li>74HC573 锁存段码。</li><li>74HC138 选择一位，快速轮询六位。</li></ol><pre>#include &lt;reg52.h&gt;
+unsigned char code seg_code[10]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
+void delay_ms(unsigned int t){ unsigned int i,j; for(i=0;i&lt;t;i++) for(j=0;j&lt;120;j++); }
+void main(){
+  unsigned char i, digit[6]={9,0,1,2,2,5};
+  while(1){ for(i=0;i&lt;6;i++){ P0=seg_code[digit[i]]; P2=(0xFE&lt;&lt;i); delay_ms(2); } }
+}</pre><p class="code-explain">每位只点亮约 2 ms，靠快速轮询形成连续视觉；0xC0 等是共阳数码管的低电平有效段码。</p></div><div class="teaching-box"><b>项目五延伸：定时器 0 中断，让 LED 定时翻转</b><ol><li>TMOD=0x01：定时器 0 工作在 16 位模式 1。</li><li>ET0、EA 开中断，TR0 启动定时器。</li><li>中断服务函数重装初值并翻转 LED。</li></ol><pre>#include &lt;reg52.h&gt;
+sbit LED = P1^0;
+void Timer0Init(void){ TMOD=0x01; TH0=(65536-50000)/256; TL0=(65536-50000)%256; ET0=1; EA=1; TR0=1; }
+void Timer0_ISR(void) interrupt 1{ TH0=(65536-50000)/256; TL0=(65536-50000)%256; LED=~LED; }
+void main(void){ Timer0Init(); while(1){} }</pre><p class="code-explain">定时器像“小闹钟”：主循环可以空转，时间到后由中断服务函数完成定时任务。教学时可把 50 ms 中断累计 60 次，实现约 3 秒翻转。</p></div><p class="board-note">仿真用于理解“段码 + 位选 + 快速轮询”；真实板上由 74HC573 和 74HC138 完成驱动。</p></div></section>
+    </section>
+    <section class="page-panel tutorial-page" id="tutorialPage" data-page-panel="tutorial" hidden>
+      <div class="tutorial-hero"><span class="eyebrow">KEIL C51 · STC-ISP · TX-1C 实操</span><h2>实操教程：从 C 代码到开发板运行</h2><p>跟着图文流程，把课堂仿真代码编译成 HEX，再下载到 STC89C52RC。每一步都标出“为什么这样做”。</p></div>
+      <div class="tutorial-flow" aria-label="实操流程"><span><b>1</b>建立工程</span><span><b>2</b>添加源文件</span><span><b>3</b>输入代码</span><span><b>4</b>配置 HEX</span><span><b>5</b>Build 编译</span><span><b>6</b>查看结果</span><span><b>7</b>打开 STC-ISP</span><span><b>8</b>打开 HEX</span><span><b>9</b>下载运行</span></div>
+      <div class="tutorial-notice"><b>先分清两件事：</b>编译是把 C 源程序交给 Keil，生成单片机能识别的 HEX 文件；下载是把 HEX 写入芯片程序存储器。下载完成并重新上电或复位后，单片机才开始执行。</div>
+      <div class="tutorial-code"><h3>可直接用于 P1 灯光仿真的最小程序</h3><pre>#include &lt;STC89C52RC.H&gt;
+sbit LED = P1^0;
+void delay(unsigned int t){ unsigned int i,j; for(i=0;i&lt;t;i++) for(j=0;j&lt;120;j++); }
+void main(void){ while(1){ LED=0; delay(500); LED=1; delay(500); } }</pre></div>
+      <div class="tutorial-grid"><article class="tutorial-step"><img src="assets/tutorial/keil-step-01.png" alt="Keil 与 STC-ISP 实操步骤 1"><div><h3>建立工程文件</h3><p>在 Project → New uVision Project 中选择项目文件夹，并填写工程名。文件夹建议与课堂项目同名，便于找到 HEX。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-02.png" alt="Keil 与 STC-ISP 实操步骤 2"><div><h3>选择芯片型号</h3><p>选择与开发板完全一致的 STC89C52RC 型号，并接受复制启动文件提示。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-03.png" alt="Keil 与 STC-ISP 实操步骤 3"><div><h3>新建 C 源文件</h3><p>File → New，保存为 LED.c；C 源文件必须使用 .c 扩展名。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-04.png" alt="Keil 与 STC-ISP 实操步骤 4"><div><h3>把源文件加入工程</h3><p>右键 Source Group 1 → Add Existing Files，把 LED.c 加入工程树。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-05.png" alt="Keil 与 STC-ISP 实操步骤 5"><div><h3>输入并检查代码</h3><p>在编辑器粘贴 C51 程序，先确认 P1.0～P1.7 与板上 LED 的连接关系。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-06.png" alt="Keil 与 STC-ISP 实操步骤 6"><div><h3>勾选生成 HEX</h3><p>Options for Target → Output，填写输出名并勾选 Create HEX File。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-07.png" alt="Keil 与 STC-ISP 实操步骤 7"><div><h3>Build 编译</h3><p>点击 Build Target 或按 F7；先看底部 Build Output，再处理红色错误行。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-08.png" alt="Keil 与 STC-ISP 实操步骤 8"><div><h3>读懂编译结果</h3><p>看到 0 Error(s)、0 Warning(s) 和 creating hex file，才说明 HEX 已生成。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-09.png" alt="Keil 与 STC-ISP 实操步骤 9"><div><h3>打开下载软件</h3><p>连接 USB 下载线并给实验板上电，启动 STC-ISP，选择对应 MCU 和串口。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-10.png" alt="Keil 与 STC-ISP 实操步骤 10"><div><h3>打开 HEX 文件</h3><p>点击打开程序文件，进入 Keil 工程的 Objects 文件夹，选择生成的 .hex。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-11.png" alt="Keil 与 STC-ISP 实操步骤 11"><div><h3>下载并运行</h3><p>点击下载/编程，按软件提示给板子重新上电；完成后 LED 会按程序运行。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-12.png" alt="Keil 与 STC-ISP 实操步骤 12"><div><h3>排错与复盘</h3><p>没有 HEX 多半是未勾选 Create HEX；下载失败先检查串口、芯片型号和上电顺序。</p></div></article><article class="tutorial-step"><img src="assets/tutorial/keil-step-13.png" alt="Keil 与 STC-ISP 实操步骤 13"><div><h3>下载完成后的确认</h3><p>查看 STC-ISP 的完成信息，关闭下载器后让开发板复位，观察 P1 LED 是否与程序节拍一致。</p></div></article></div>
+      <div class="tutorial-checklist"><h3>项目一至项目五：头文件怎么选</h3><ul><li><code>STC89C52RC.H</code>：开发板芯片专用寄存器定义，优先用于 STC89C52RC 工程。</li><li><code>REGX51.H</code> 或 <code>REG52.H</code>：传统 51 兼容寄存器定义；如果老师发的工程模板指定了其中一个，就保持模板一致。</li><li><code>INTRINS.H</code>：Keil C51 内部函数库，提供 <code>_crol_()</code> 循环左移、<code>_cror_()</code> 循环右移等函数。</li><li>项目一 P1 流水灯会用到芯片头文件 + <code>INTRINS.H</code>；项目二至项目五至少需要芯片头文件，定时器项目还要使用定时器/中断寄存器定义。</li></ul></div>
+      <div class="tutorial-checklist"><h3>课堂验收清单</h3><ul><li>工程树中能看到 LED.c，编译窗口显示 0 Error(s)。</li><li>Objects 文件夹里确实出现 .hex，记录工程名和生成时间。</li><li>STC-ISP 选择正确芯片与串口，下载成功后 P1 LED 按程序亮灭。</li><li>学生能说清：C 代码 → 编译器/链接器 → HEX → 下载器 → 单片机执行。</li></ul></div>
+    </section>
+    <div class="footer-note">小提示：二进制只有 0 和 1；十六进制会用到 A～F 哦。<br><span>© 2026 夜夜班 · 夜夜班的进制转换练习</span></div>
+  </main><div class="toast" id="toast"></div>
+  <script>
+    const modes={
+      'bin-dec':{from:['二进制','BIN · 2','2'],to:['十进制','DEC · 10','10'],hint:'只允许输入 0 和 1'},
+      'dec-hex':{from:['十进制','DEC · 10','10'],to:['十六进制','HEX · 16','16'],hint:'输入 0～9 的数字'},
+      'hex-bin':{from:['十六进制','HEX · 16','16'],to:['二进制','BIN · 2','2'],hint:'可输入 0～9 和 A～F'}
+    };
+    const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+    $('.pin-map').innerHTML=Array.from({length:8},(_,i)=>`<div class="pin"><b>P1.${i}</b><small>LED${i}</small></div>`).join('');
+    const settingDefaults={watermark:100,surface:0,tab:0};
+    function applySetting(key,value){const v=Number(value);document.documentElement.style.setProperty(key==='watermark'?'--watermark-opacity':key==='surface'?'--surface-opacity':'--tab-opacity',v/100);$('#'+key+'Value').textContent=v+'%';$('#'+key+'Range').value=v;localStorage.setItem('夜夜班-'+key,v)}
+    function loadSettings(){const version=localStorage.getItem('夜夜班-settings-version');if(version!=='2'){Object.entries(settingDefaults).forEach(([k,v])=>localStorage.setItem('夜夜班-'+k,v));localStorage.setItem('夜夜班-settings-version','2')}Object.entries(settingDefaults).forEach(([k,d])=>applySetting(k,localStorage.getItem('夜夜班-'+k)??d));}
+    $('#settingsBtn').addEventListener('click',()=>{let p=$('#settingsPanel'),open=p.classList.toggle('open');$('#settingsBtn').setAttribute('aria-expanded',open)});[['watermark','watermarkRange'],['surface','surfaceRange'],['tab','tabRange']].forEach(([key,id])=>$('#'+id).addEventListener('input',e=>applySetting(key,e.target.value)));$('#resetSettings').addEventListener('click',()=>Object.entries(settingDefaults).forEach(([k,v])=>applySetting(k,v)));
+    loadSettings();
+    let mode='bin-dec', reverse=false;
+    const names={2:'二进制',10:'十进制',16:'十六进制'};
+    function renderBinaryTutorial(raw,dec){let padded=raw.padStart(Math.ceil(raw.length/4)*4,'0'),groups=padded.match(/.{4}/g)||['0000'],weights=[8,4,2,1],html=groups.map((g,gi)=>{let chosen=weights.filter((w,i)=>g[i]==='1');return `<div class="binary-group-title">第 ${gi+1} 组：${g}₂</div><div class="weight-visual"><div class="weight-line">${weights.map((w,i)=>`<span class="${g[i]==='1'?'active':''}">${w}</span>`).join('')}</div><div class="digit-line">${[...g].map(v=>`<span class="${v==='1'?'on':''}">${v}</span>`).join('')}</div><div class="weight-caption">有 1 的位置，对应位权直接拿下来</div></div><div class="take-sum">${chosen.length?chosen.join(' + ')+' = ':''}<b>${parseInt(g,2)}</b></div>`}).join('');$('#stepsList').innerHTML=`<div class="step"><span class="step-num">1</span><span>把二进制切成每 4 位一组，每组上方放 <code>8、4、2、1</code>：</span></div><div class="step"><span class="step-num">2</span><span>${html}</span></div><div class="step"><span class="step-num">3</span><span>把每组结果拼回十进制：<code>${groups.map(g=>parseInt(g,2)).join('、')}</code>；完整数值是 <code>${dec}</code>。</span></div>`;}
+    let codeTimer=null,codeRunning=false,codeEvents=[];
+    function stripCComments(code){return code.replace(/\/\/.*$/gm,'').replace(/\/\*[\s\S]*?\*\//g,'');}
+    function parseP1Expr(expr,state){
+      let e=expr.trim().replace(/\s+/g,' '), old=state.value;
+      let rotate=e.match(/^_crol_\(\s*P1\s*,\s*(\d+)\s*\)$/i);
+      if(rotate){let n=Number(rotate[1])%8;return ((old<<n)|(old>>(8-n)))&255;}
+      let rotateRight=e.match(/^_cror_\(\s*P1\s*,\s*(\d+)\s*\)$/i);
+      if(rotateRight){let n=Number(rotateRight[1])%8;return ((old>>n)|(old<<(8-n)))&255;}
+      e=e.replace(/\bP1\b/g,String(old));
+      if(!/^[0-9A-Fa-fxX ()~&|^<>+\-*/]+$/.test(e))throw new Error('暂不支持这条 P1 表达式；目前支持 P1 赋值、_crol_(P1,1)、_cror_(P1,1) 和按位运算');
+      if(/<<|>>/.test(e)){let m=e.match(/^\(?\s*(\d+)\s*(<<|>>)\s*(\d+)\s*\)?$/);if(!m)throw new Error('移位表达式请写成 P1 << 1 或 P1 >> 1');let n=Number(m[1]),shift=Number(m[3]);return (m[2]==='<<'?n<<shift:n>>shift)&255;}
+      if(/^~\s*\(?\s*\d+\s*\)?$/.test(e)){let n=Number(e.replace(/[^0-9]/g,''));return (~n)&255;}
+      if(!/^[\dA-Fa-fxX ()~&|^+\-*/]+$/.test(e))throw new Error('表达式包含暂不支持的字符');
+      let value=Function('return ('+e+')')();
+      if(!Number.isFinite(value))throw new Error('无法计算这条 P1 表达式');
+      return Number(value)&255;
+    }
+    function parseCProgram(source){
+      let code=stripCComments(source).replace(/\r/g,''), events=[], state={value:255}, re=/(P1\s*(?:=|\|=|&=|\^=)\s*[^;]+;|delay\s*\(\s*\d+\s*\)\s*;?)/gi,m,last=null;
+      if(/\bP[023]\b/.test(code))throw new Error('当前课堂仿真只开放 P1.0～P1.7，先不要使用 P0/P2/P3');
+      while((m=re.exec(code))){let statement=m[0].trim();if(/^delay/i.test(statement)){if(last)last.delay=Math.max(120,Math.min(1200,Number(statement.match(/\d+/)[0])));continue;}
+        let op=statement.match(/P1\s*(=|\|=|&=|\^=)\s*([^;]+)/i);if(!op)continue;let val=parseP1Expr(op[2],state);if(op[1]==='|=')val=state.value|val;if(op[1]==='&=')val=state.value&val;if(op[1]==='^=')val=state.value^val;state.value=val&255;last={value:state.value,delay:280,source:statement};events.push(last);if(/_crol_|_cror_/i.test(op[2])){for(let k=1;k<8;k++){state.value=/_crol_/i.test(op[2])?(((state.value<<1)|(state.value>>7))&255):(((state.value>>1)|(state.value<<7))&255);events.push({value:state.value,delay:280,source:statement});}last=events[events.length-1];}}
+      if(!events.length)throw new Error('没有找到 P1 赋值语句，例如：P1 = 0xFE; 或 P1 = _crol_(P1,1);');
+      return events;
+    }
+    function renderPortBoard(target,value){let bits=value.toString(2).padStart(8,'0');$(target).innerHTML=[...bits].map((v,i)=>`<div class="led-cell"><span class="led ${v==='0'?'on':''}" aria-label="P1.${7-i} LED${7-i} ${v==='0'?'亮':'灭'}"></span><span class="led-value">${v}</span><span class="led-index">P1.${7-i}</span></div>`).join('');return bits;}
+    function renderBaseReadouts(prefix,value){let bits=value.toString(2).padStart(8,'0'),high=bits.slice(0,4),low=bits.slice(4);$('#'+prefix+'Bin').textContent=high+' '+low;$('#'+prefix+'Dec').textContent=value;$('#'+prefix+'Hex').textContent=value.toString(16).toUpperCase().padStart(2,'0');if(prefix==='sim')$('#simExplain').textContent=`高四位 ${high} → ${parseInt(high,2).toString(16).toUpperCase()}，低四位 ${low} → ${parseInt(low,2).toString(16).toUpperCase()}；所以 P1 = ${value.toString(16).toUpperCase().padStart(2,'0')}₁₆ = ${value}₁₀。`;}
+    function setP1Value(value,source,index,total){let bits=renderPortBoard('#simLedBoard',value);renderBaseReadouts('sim',value);$('#p1Hex').textContent='0x'+value.toString(16).toUpperCase().padStart(2,'0');$('#simStatus').textContent=`第 ${index+1}/${total} 步：${source}；低电平 0 点亮，当前亮灯 ${[...bits].filter(v=>v==='0').length} 个。`;$('#codeLog').textContent=codeEvents.map((e,i)=>(i===index?'▶ ':'  ')+e.source+'  →  0x'+e.value.toString(16).toUpperCase().padStart(2,'0')).join('\n');}
+    function stopCode(){if(codeTimer)clearTimeout(codeTimer);codeTimer=null;codeRunning=false;$('.code-lab').classList.remove('sim-running');$('#simStatus').textContent='仿真已停止。可以修改代码后重新运行。';}
+    function runCode(){stopCode();try{codeEvents=parseCProgram($('#codeEditor').value);}catch(err){$('#simStatus').textContent='代码提示：'+err.message;$('#codeLog').textContent='请参考下方示例，使用 P1 = 0x00 或 P1 = 0xFF 这样的写法。';return;}codeRunning=true;$('.code-lab').classList.add('sim-running');let i=0;const tick=()=>{if(!codeRunning)return;let e=codeEvents[i];setP1Value(e.value,e.source,i,codeEvents.length);i=(i+1)%codeEvents.length;codeTimer=setTimeout(tick,e.delay);};tick();}
+    function loadBlink(){$('#codeEditor').value=`#include <reg52.h>\nvoid delay(unsigned int t){ unsigned int i,j; for(i=0;i<t;i++) for(j=0;j<120;j++); }\nvoid main(){\n  while(1){\n    P1 = 0x00;   // 8 灯全亮（低电平点亮）\n    delay(300);\n    P1 = 0xFF;   // 8 灯全灭\n    delay(300);\n  }\n}`;runCode();}
+    function loadFlow(){$('#codeEditor').value=`#include <reg52.h>\nvoid delay(unsigned int t){ unsigned int i,j; for(i=0;i<t;i++) for(j=0;j<120;j++); }\nvoid main(){\n  while(1){\n    P1 = 0xFE; delay(180);\n    P1 = 0xFD; delay(180);\n    P1 = 0xFB; delay(180);\n    P1 = 0xF7; delay(180);\n    P1 = 0xEF; delay(180);\n    P1 = 0xDF; delay(180);\n    P1 = 0xBF; delay(180);\n    P1 = 0x7F; delay(180);\n  }\n}`;runCode();}
+    const classroomExamples={
+      'flow-lib':{title:'库函数循环左移流水灯',eyebrow:'项目一 · P1 流水灯',desc:'P1.0 点亮后，每次调用 _crol_(P1,1) 向下一个灯位移动。',code:`//程序: lsd_khs.c
+//功能: 采用库函数实现流水灯的控制，P1口流水灯
+#include <STC89C52RC.H>
+#include <INTRINS.H>
+
+void delay(unsigned int i)
+{
+    while(i--);
+}
+
+void main()
+{
+    P1 = 0xFE;
+    while(1)
+    {
+        delay(40000);
+        P1 = _crol_(P1, 1);
+    }
+}`},
+      'blink-pair':{title:'不同位置灯同时闪烁',eyebrow:'项目一 · P1 多灯闪烁',desc:'给 P1 写入两个不同的位模式，观察同一端口多个灯同时变化。',code:`#include <STC89C52RC.H>
+
+void delay(unsigned int i)
+{
+    while(i--);
+}
+
+void main()
+{
+    while(1)
+    {
+        P1 = 0xD3;
+        delay(50000);
+        P1 = 0xF5;
+        delay(50000);
+    }
+}`},
+      'key-led':{title:'S2 按键控制 LED',eyebrow:'项目二 · S2 独立按键',desc:'S2 接 P3.4，按下为低电平；按下时点亮 P1.0，松开后熄灭。',code:`#include <STC89C52RC.H>
+
+sbit S2 = P3^4;
+sbit LED = P1^0;
+
+void main()
+{
+    while(1)
+    {
+        if(S2 == 0)
+        {
+            LED = 0;
+        }
+        else
+        {
+            LED = 1;
+        }
+    }
+}`},
+      'buzzer':{title:'S2 按键控制蜂鸣器',eyebrow:'项目二 · 蜂鸣器',desc:'S2 接 P3.4，蜂鸣器接 P2.3；按下 S2 发声，松开 S2 静音。',code:`#include <STC89C52RC.H>
+
+sbit S2 = P3^4;
+sbit BEEP = P2^3;
+
+void main()
+{
+    while(1)
+    {
+        if(S2 == 0)
+        {
+            BEEP = 0;
+        }
+        else
+        {
+            BEEP = 1;
+        }
+    }
+}`},
+      'turn':{title:'S2/S3 左右转向灯',eyebrow:'项目三 · 按键与多灯控制',desc:'S2=P3.4 控制左转灯，S3=P3.5 控制右转灯；代码保持与开发板接线一致。',code:`#include <STC89C52RC.H>
+
+sbit LEDL1 = P1^0;
+sbit LEDL2 = P1^1;
+sbit LEDR1 = P1^2;
+sbit LEDR2 = P1^3;
+sbit S2 = P3^4;
+sbit S3 = P3^5;
+
+void delay(unsigned int i)
+{
+    while(i--);
+}
+
+void main()
+{
+    while(1)
+    {
+        P3 = 0xFF;
+        LEDL1 = S2;
+        LEDL2 = S2;
+        LEDR1 = S3;
+        LEDR2 = S3;
+
+        delay(20000);
+
+        LEDL1 = 1;
+        LEDL2 = 1;
+        LEDR1 = 1;
+        LEDR2 = 1;
+
+        delay(20000);
+    }
+}`}
+    };
+    let standaloneTimer=null,standaloneKey='flow-lib',standaloneS2=false,standaloneS3=false;
+    function standaloneLedMarkup(value){let bits=value.toString(2).padStart(8,'0');return '<div class="standalone-led">'+[...bits].map((v,i)=>'<div class="led-cell"><span class="led '+(v==='0'?'on':'')+'"></span><small>P1.'+(7-i)+' · '+v+'</small></div>').join('')+'</div>';}
+    function renderStandaloneOutput(key){
+      let out=$('#standaloneOutput');
+      if(key==='flow-lib'||key==='blink-pair'){out.innerHTML='<h4>端口仿真</h4><p>低电平 0 点亮；点击“运行本页仿真”查看代码写入 P1 后的连续状态。</p>'+standaloneLedMarkup(key==='flow-lib'?0xFE:0xD3);return;}
+      if(key==='buzzer'){out.innerHTML='<h4>S2 按键与蜂鸣器仿真</h4><div class="standalone-buzzer '+(standaloneS2?'active':'')+'"><div class="buzzer-device"><span>BUZZER</span><i></i></div><div class="sound-waves"><span>)))</span><span>)))</span><span>)))</span></div><div><strong>'+(standaloneS2?'发声中':'静音')+'</strong><small>S2=P3.4 · 按下为 0，BEEP=P2.3</small></div><button class="code-btn" id="standaloneBuzzerToggle">按下 / 松开 S2</button></div>';$('#standaloneBuzzerToggle').addEventListener('click',()=>{standaloneS2=!standaloneS2;renderStandaloneOutput(key);});return;}
+      if(key==='key-led'){out.innerHTML='<h4>S2 按键与 LED 仿真</h4><p>S2=P3.4；按下时 LED=P1.0 输出 0。</p><button class="code-btn" id="standaloneKeyToggle">按下 / 松开 S2</button>'+standaloneLedMarkup(standaloneS2?0xFE:0xFF);$('#standaloneKeyToggle').addEventListener('click',()=>{standaloneS2=!standaloneS2;renderStandaloneOutput(key);});return;}
+      out.innerHTML='<h4>S2 / S3 转向灯仿真</h4><p>S2=P3.4 左转，S3=P3.5 右转；按下后对应两盏灯点亮。</p><button class="code-btn" id="standaloneS2Toggle">按下 S2</button><button class="code-btn" id="standaloneS3Toggle">按下 S3</button>'+standaloneLedMarkup((standaloneS2?0xFC:0xFF)&(standaloneS3?0xF3:0xFF));$('#standaloneS2Toggle').addEventListener('click',()=>{standaloneS2=!standaloneS2;renderStandaloneOutput(key);});$('#standaloneS3Toggle').addEventListener('click',()=>{standaloneS3=!standaloneS3;renderStandaloneOutput(key);});
+    }
+    function renderStandaloneExample(key){standaloneKey=key;let ex=classroomExamples[key];$('#standaloneEyebrow').textContent=ex.eyebrow;$('#standaloneTitle').textContent=ex.title;$('#standaloneDesc').textContent=ex.desc;$('#standaloneCode').value=ex.code;$$('.code-example-tab').forEach(t=>t.classList.toggle('active',t.dataset.codeExample===key));renderStandaloneOutput(key);}
+    $$('.code-example-tab').forEach(t=>t.addEventListener('click',()=>renderStandaloneExample(t.dataset.codeExample)));
+    $('#resetStandalone').addEventListener('click',()=>renderStandaloneExample(standaloneKey));
+    $('#copyStandalone').addEventListener('click',async()=>{await navigator.clipboard?.writeText($('#standaloneCode').value);toast('代码已复制，可以粘贴到 Keil');});
+    $('#runStandalone').addEventListener('click',()=>{if(standaloneKey==='flow-lib'||standaloneKey==='blink-pair'){clearInterval(standaloneTimer);let events;try{events=parseCProgram($('#standaloneCode').value);}catch(e){$('#standaloneOutput').innerHTML='<h4>代码提示</h4><p>'+e.message+'</p>';return;}let i=0;standaloneTimer=setInterval(()=>{let e=events[i++%events.length];$('#standaloneOutput').innerHTML='<h4>端口仿真 · 当前 P1 = 0x'+e.value.toString(16).toUpperCase().padStart(2,'0')+'</h4><p>代码状态按顺序更新，低电平 0 点亮。</p>'+standaloneLedMarkup(e.value);},300);}else{renderStandaloneOutput(standaloneKey);}});
+    renderStandaloneExample('flow-lib');
+    function showPage(page){$$('[data-page-panel]').forEach(panel=>panel.hidden=panel.dataset.pagePanel!==page);$$('.page-tab').forEach(tab=>{let active=tab.dataset.page===page;tab.classList.toggle('active',active);if(active)tab.setAttribute('aria-current','page');else tab.removeAttribute('aria-current');});if(page!=='p1'&&codeRunning)stopCode();window.scrollTo({top:0,behavior:'instant'});}
+    $$('.page-tab').forEach(tab=>tab.addEventListener('click',()=>showPage(tab.dataset.page)));
+        let keyStates=[false,false,false,false],keyProgram=null,counter=0,segTimer=null;
+    function updateKeyView(){let value=255;keyStates.forEach((on,i)=>{if(on)value&=~(1<<i)});$('#keyLevel').textContent=keyStates.some(Boolean)?'按下：对应 P1 位为低电平 0':'松开：P1.0～P1.3 均为高电平 1';renderPortBoard('#keyLedBoard',value);renderBaseReadouts('key',value);if(keyProgram)$('#keyStatus').textContent=`P1 = 0x${value.toString(16).toUpperCase().padStart(2,'0')}；低电平有效，亮灯 ${8-value.toString(2).padStart(8,'0').replace(/1/g,'').length} 个。`;}
+    function runKeyCode(){let code=stripCComments($('#keyCodeEditor').value);keyProgram=/P1\s*=\s*0x00/i.test(code)?'all':'custom';$('#keyStatus').textContent='代码已载入：S1～S4 使用 P1.0～P1.3 低电平输入。';updateKeyView();}
+    const keyExample=$('#keyCodeEditor').value;$('#runKeyCode').addEventListener('click',runKeyCode);$('#resetKeyCode').addEventListener('click',()=>{$('#keyCodeEditor').value=keyExample;runKeyCode();});
+    $('#indKeys').innerHTML=['S1 · P1.0','S2 · P1.1','S3 · P1.2','S4 · P1.3'].map((t,i)=>`<button class="ind-key" data-key="${i}">${t}<small>按下=0</small></button>`).join('');$$('.ind-key').forEach(btn=>{let set=(v)=>{keyStates[+btn.dataset.key]=v;btn.classList.toggle('pressed',v);updateKeyView();};btn.addEventListener('pointerdown',e=>{e.preventDefault();set(true)});btn.addEventListener('pointerup',()=>set(false));btn.addEventListener('pointerleave',()=>set(false));});
+    $('#counterKey').addEventListener('click',()=>{counter=(counter+1)%100;$('#counterDisplay').textContent=String(counter).padStart(2,'0');$('#counterLog').textContent=`S1 按下 → P1.0 = 0 → 计数 ${String(counter).padStart(2,'0')}；松开后等待下一次按下。`;});
+    $('#matrixKeys').innerHTML=Array.from({length:16},(_,i)=>`<button data-matrix="${i}">${i<10?i:String.fromCharCode(55+i)}</button>`).join('');$$('[data-matrix]').forEach(btn=>btn.addEventListener('click',()=>{$('#matrixDisplay').textContent=btn.textContent;$('#matrixLog').textContent=`检测到：${btn.textContent}；行线拉低，列线读取到低电平。`}));
+    function renderSeg(){let val=$('#segInput').value.replace(/\D/g,'').slice(0,6).padStart(6,'0');$('#segInput').value=val;$('#segDisplay').innerHTML=[...val].map((d,i)=>`<span class="${i===counter%6?'scan-on':''}">${d}</span>`).join('');$('#segStatus').textContent=`P0 段码：${val[counter%6]}；74HC138 当前选择第 ${counter%6+1} 位。`;}
+    $('#runSeg').addEventListener('click',()=>{clearInterval(segTimer);segTimer=setInterval(()=>{counter++;renderSeg();},120);renderSeg();});$('#stopSeg').addEventListener('click',()=>{clearInterval(segTimer);segTimer=null;$('#segStatus').textContent='已停止扫描；P0 段码和位选保持当前值。'});$('#segInput').addEventListener('input',renderSeg);
+    function showProject(name){$$('[data-project-panel]').forEach(p=>p.hidden=p.dataset.projectPanel!==name);$$('.project-tab').forEach(t=>t.classList.toggle('active',t.dataset.project===name));if(name==='key')updateKeyView();}
+    $$('.project-tab').forEach(t=>t.addEventListener('click',()=>showProject(t.dataset.project)));showProject('key');
+    function setMode(m){mode=m;reverse=false; $$('.mode-tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===m)); updateLabels(); setValues(m==='bin-dec'?'1011':m==='dec-hex'?'42':'2D');}
+    function updateLabels(){let x=modes[mode], f=reverse?x.to:x.from,t=reverse?x.from:x.to; [['fromName',f[0]],['fromTag',f[1]],['toName',t[0]],['toTag',t[1]]].forEach(([id,v])=>$('#'+id).textContent=v); $('#hint').textContent=reverse?(t[0]==='二进制'?'只允许输入 0 和 1':t[0]==='十进制'?'输入 0～9 的数字':'可输入 0～9 和 A～F'):x.hint; }
+    function setValues(v){$('#fromInput').value=v; convert();}
+    function convert(){let x=modes[mode], from=reverse?x.to:x.from,to=reverse?x.from:x.to, raw=$('#fromInput').value.trim().toUpperCase(), base=+from[2], pattern=base===2?/^[01]+$/:base===10?/^[0-9]+$/:/^[0-9A-F]+$/; try{if(!pattern.test(raw))throw 0; let dec=parseInt(raw,base); if(!Number.isSafeInteger(dec)||dec<0)throw 0; let out=dec.toString(+to[2]).toUpperCase(); $('#toInput').value=out; $('#stepsCaption').textContent=`${raw}${sub(base)} = ${out}${sub(+to[2])}`; renderSteps(raw,dec,base,+to[2],out);if(base===2&&+to[2]===10)renderBinaryTutorial(raw,dec);}catch(e){$('#toInput').value='—';$('#stepsCaption').textContent='等你输入一个数'; $('#stepsList').innerHTML='<div class="step"><span class="step-num">!</span><span>先输入一个合法的数字，小伙伴会帮你检查。</span></div>';}}
+    function sub(n){return n===2?'₂':n===10?'₁₀':'₁₆';}
+    function renderSteps(raw,dec,baseFrom,baseTo,out){let arr=[];if(baseFrom===2&&baseTo===10){let ds=[...raw].reverse();arr=[`从右往左，位权依次是 <code>2⁰</code>、<code>2¹</code>、<code>2²</code>……`,`把每一位乘上对应位权：<code>${ds.map((d,i)=>d+'×2^'+i).reverse().join(' + ')}</code>`,`相加得到：<code>${ds.map((d,i)=>d+'×'+2**i).reverse().join(' + ')} = ${dec}</code>`];}else if(baseFrom===2&&baseTo===16){let padded=raw.padStart(Math.ceil(raw.length/4)*4,'0'),groups=padded.match(/.{4}/g)||['0000'];arr=[`从右往左每 4 位分一组，左边不够 4 位补 0：<code>${groups.join(' ')}</code>`,`每组按 <code>8、4、2、1</code> 求和：<code>${groups.map(g=>parseInt(g,2)).join('、')}</code>`,`对照 0～15 表，得到十六进制 <code>${out}</code>`];}else if(baseFrom===10){let r=dec,pieces=[];if(r===0)pieces=['0 ÷ '+baseTo+' = 0'];while(r>0){pieces.push(`${r} ÷ ${baseTo} = ${Math.floor(r/baseTo)} …… 余 ${r%baseTo}`);r=Math.floor(r/baseTo);}arr=[`不断除以 <code>${baseTo}</code>，记录每次的余数`,`<code>${pieces.join('</code><br><code>')}</code>`,`把余数从下往上读，就是 <code>${out}</code>`];}else if(baseFrom===16&&baseTo===2){arr=[`十六进制每 1 位，对应二进制 4 位`,`<code>${[...raw].map(c=>parseInt(c,16).toString(2).padStart(4,'0')).join(' ')}</code>`,`去掉最左边多余的 0，得到 <code>${out}</code>`];}else{arr=[`每一位按 <code>16</code> 的位权展开`,`<code>${[...raw].reverse().map((d,i)=>parseInt(d,16)+'×16^'+i).reverse().join(' + ')}</code>`,`相加得到十进制 <code>${out}</code>`];}$('#stepsList').innerHTML=arr.map((t,i)=>`<div class="step"><span class="step-num">${i+1}</span><span>${t}</span></div>`).join('');}
+    const weights=[8,4,2,1];let ledBits='10101100';
+    function showNibble(bits,side){$('#'+side+'Bits').innerHTML=[...bits].map(v=>`<span class="${v==='1'?'on':''}">${v}</span>`).join('');let active=weights.filter((w,i)=>bits[i]==='1'),sum=active.reduce((a,b)=>a+b,0),digit=sum.toString(16).toUpperCase();$('#'+side+'Sum').innerHTML=`${active.length?active.join(' + '):'0'} = ${sum} → 十六进制 <b>${digit}</b>`;return digit;}
+    function updateLedLab(bits){ledBits=bits;$('#bitInput').value=bits.slice(0,4)+' '+bits.slice(4);$('#ledBoard').innerHTML=[...bits].map((v,i)=>{let lit=v==='0';return `<div class="led-cell"><button class="led ${lit?'on':''}" data-index="${i}" aria-label="P1.${7-i} LED${7-i}，当前${lit?'亮':'灭'}（低电平${v}）" aria-pressed="${lit}"></button><span class="led-value">${v}</span><span class="led-index">P1.${7-i}</span></div>`}).join('');$$('.led').forEach(b=>b.addEventListener('click',()=>{let i=+b.dataset.index;updateLedLab(ledBits.slice(0,i)+(ledBits[i]==='1'?'0':'1')+ledBits.slice(i+1))}));let left=showNibble(bits.slice(0,4),'left'),right=showNibble(bits.slice(4),'right'),dec=parseInt(bits,2),hex=left+right;$('#hexResult').innerHTML=`${hex}<small>₁₆</small>`;$('#resultSteps').innerHTML=`<span class="result-step">左组：${bits.slice(0,4)}₂ = ${parseInt(bits.slice(0,4),2)}₁₀ → ${left}₁₆</span><span class="result-step">右组：${bits.slice(4)}₂ = ${parseInt(bits.slice(4),2)}₁₀ → ${right}₁₆</span><span class="result-step">整字节：${bits}₂ = ${dec}₁₀；查表 ${Math.floor(dec/16)}×16 + ${dec%16} = ${hex}₁₆</span>`;$('#labTip').textContent=`先看左、右两组，再合成：${bits.slice(0,4)} ${bits.slice(4)}₂ = ${dec}₁₀ = ${hex}₁₆。LED 为低电平点亮，所以输入 0 的灯会亮。`;
+    }
+    $('#bitInput').addEventListener('input',e=>{let bits=e.target.value.replace(/[^01]/g,'').slice(0,8);if(bits.length===8)updateLedLab(bits);else $('#labTip').textContent=`再输入 ${8-bits.length} 位，凑满一个字节。`});$('#bitInput').addEventListener('blur',()=>updateLedLab(ledBits));
+    $('#referenceTable').innerHTML=Array.from({length:16},(_,n)=>`<div class="ref-cell ${n>=10?'special':''}"><small>${n}</small><b>${n.toString(16).toUpperCase()}</b></div>`).join('');
+    function toast(t){let el=$('#toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
+    $$('.mode-tab').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode))); $('#fromInput').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^0-9A-F]/g,'');convert()}); $('#swapBtn').addEventListener('click',()=>{reverse=!reverse;let v=$('#toInput').value;if(v&&v!=='—'){$('#fromInput').value=v}updateLabels();convert()});$('#clearBtn').addEventListener('click',()=>{$('#fromInput').value='';convert();$('#fromInput').focus()});
+    updateLedLab(ledBits);renderPortBoard('#simLedBoard',0xAC);renderBaseReadouts('sim',0xAC);updateKeyView();updateLabels();convert();showPage('learn');
+  </script>
+</body>
+</html>

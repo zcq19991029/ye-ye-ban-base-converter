@@ -91,7 +91,13 @@
 
 ## 在线访问
 
-发布 GitHub Pages 后，可直接在浏览器打开项目主页。
+在线教学网站由 Sites 托管：
+
+https://ye-ye-ban-base-converter.cuddly-stork-1579.chatgpt.site
+
+GitHub 仓库只用于公开保存源码、素材和版本记录，不启用 GitHub Pages。
+
+静态发布目录为 `dist/`，`.openai/hosting.json` 保存 Sites 项目标识和目录配置。
 
 ## 本地运行
 
