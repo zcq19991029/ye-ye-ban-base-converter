@@ -1,4 +1,4 @@
-# 夜夜班的进制转换练习
+# 夜夜班的进制转换练习 Sites版
 
 一个面向单片机入门课堂的本地/网页小游戏，帮助学生练习二进制、十进制和十六进制之间的快速转换。
 
@@ -93,7 +93,7 @@
 
 在线教学网站由 Sites 托管：
 
-https://ye-ye-ban-base-converter.zcq991029.chatgpt.site
+https://ye-ye-ban-base-converter-sites.zcq991029.chatgpt.site
 
 GitHub 仓库只用于公开保存源码、素材和版本记录，不启用 GitHub Pages。
 
@@ -105,4 +105,4 @@ GitHub 仓库只用于公开保存源码、素材和版本记录，不启用 Git
 
 ## 版权与署名
 
-© 2026 夜夜班 · 夜夜班的进制转换练习
+© 2026 夜夜班 · 夜夜班的进制转换练习 Sites版
