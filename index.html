@@ -105,26 +105,8 @@
     </div>
     <section class="page-panel sim-page" id="p1Page" data-page-panel="p1" hidden>
       <div class="page-intro"><span class="eyebrow">STC89C52RC · P1 端口</span><h2>写 C 代码，马上看见灯光</h2><p>当前端口值会同时显示二进制、十进制与十六进制。0 为低电平，对应 LED 点亮。</p></div>
-      <div class="card sim-led-card"><div class="lab-head"><h3>8 个 LED · P1.7 → P1.0</h3><span>代码运行时实时更新</span></div><div class="led-board" id="simLedBoard"></div><div class="base-readouts"><div><small>二进制 BIN</small><strong id="simBin">1010 1100</strong></div><div><small>十进制 DEC</small><strong id="simDec">172</strong></div><div><small>十六进制 HEX</small><strong id="simHex">AC</strong></div></div><p class="sim-explain" id="simExplain">高四位 1010 → A，低四位 1100 → C；所以 P1 = AC₁₆。</p></div>
-        <section class="code-lab" aria-label="P1端口C语言仿真工作台"><div class="code-lab-head"><div><h3>P1 端口 C 代码仿真</h3><p>按 Keil C51 的 P1 端口语义执行赋值、按位运算、delay() 和 INTRINS.H 循环移位，改完代码即可反复演示。</p></div><span class="chip-tag">STC89C52RC · PORT 1</span></div><div class="code-grid"><div class="code-box"><textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="C语言代码编辑器">//程序: p1_basic.c
-//功能: 直接给 P1 写入两个端口值，观察 8 位 LED 与进制关系
-#include <STC89C52RC.H>
-
-void delay(unsigned int i)
-{
-    while(i--);
-}
-
-void main()
-{
-    while(1)
-    {
-        P1 = 0xAC;       // 1010 1100₂ = 172₁₀ = AC₁₆
-        delay(500);
-        P1 = 0x53;       // 0101 0011₂ = 83₁₀ = 53₁₆
-        delay(500);
-    }
-}</textarea><div class="code-actions"><button class="code-btn primary" id="runCode">▶ 运行仿真</button><button class="code-btn dark" id="stopCode">■ 停止</button><button class="code-btn" id="pauseCode" aria-pressed="false">Ⅱ 暂停</button><button class="code-btn" id="loadBlink">加载闪烁示例</button><button class="code-btn" id="loadFlow">加载流水灯示例</button></div></div><div class="sim-panel"><h4>开发板 P1 引脚映射</h4><div class="pin-map"></div><div class="p1-value"><span>当前 P1</span><strong id="p1Hex">0xAC</strong></div><div class="sim-status" id="simStatus">等待运行代码。当前支持 P1 赋值、取反、移位、按位运算、delay() 和 _crol_/_cror_。</div><div class="code-log" id="codeLog">仿真日志：尚未运行</div><p class="code-note">说明：这是按 Keil C51 语义实现的 P1 教学子集，不替代完整 Keil 编译器；最终仍要生成 HEX 并下载到真实 STC89C52RC 开发板。</p></div></div></section>
+      <div class="card sim-led-card"><div class="lab-head"><h3>8 个 LED · P1.7 → P1.0</h3><span>代码运行时实时更新</span></div><div class="led-board" id="simLedBoard"></div><div class="base-readouts"><div><small>二进制 BIN</small><strong id="simBin">1111 1111</strong></div><div><small>十进制 DEC</small><strong id="simDec">255</strong></div><div><small>十六进制 HEX</small><strong id="simHex">FF</strong></div></div><p class="sim-explain" id="simExplain">高四位 1111 → F，低四位 1111 → F；所以 P1 = FF₁₆。</p></div>
+        <section class="code-lab" aria-label="P1端口C语言仿真工作台"><div class="code-lab-head"><div><h3>P1 端口 C 代码仿真</h3><p>代码框默认留空；点击示例按钮填充课本程序，再点击“运行仿真”观察 P1.0～P1.7 与进制值的对应关系。</p></div><span class="chip-tag">STC89C52RC · PORT 1</span></div><div class="code-grid"><div class="code-box"><textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="C语言代码编辑器" placeholder="点击下方按钮填入示例，或直接粘贴你的 C51 程序"></textarea><div class="code-actions"><button class="code-btn primary" id="runCode">▶ 运行仿真</button><button class="code-btn dark" id="stopCode">■ 停止</button><button class="code-btn" id="pauseCode" aria-pressed="false" disabled>Ⅱ 暂停</button><button class="code-btn" id="loadBlink">加载闪烁示例</button><button class="code-btn" id="loadFlow">加载课本流水灯</button></div></div><div class="sim-panel"><h4>开发板 P1 引脚映射</h4><div class="pin-map"></div><div class="p1-value"><span>当前 P1</span><strong id="p1Hex">0xFF</strong></div><div class="sim-status" id="simStatus">代码框为空，请先点击下方示例按钮或粘贴 C51 程序。</div><div class="code-log" id="codeLog">仿真日志：尚未加载程序</div><p class="code-note">说明：这是按 Keil C51 语义实现的 P1 教学子集，不替代完整 Keil 编译器；最终仍要生成 HEX 并下载到真实 STC89C52RC 开发板。</p></div></div></section>
     </section>
     <section class="page-panel code-examples-page" id="codesPage" data-page-panel="codes" hidden>
       <div class="page-intro"><span class="eyebrow">KEIL C51 · 独立代码练习页</span><h2>课堂代码示例</h2><p>每次只打开一个程序，代码按 Keil 习惯分行显示；先读懂，再修改，再下载到开发板。</p></div>
@@ -240,8 +222,55 @@ void main(void){ Timer0Init(); while(1){} }</pre><p class="code-explain">定时�
     function tickCode(){if(!codeRunning||codePaused||!codeEvents.length)return;let e=codeEvents[codeIndex];setP1Value(e.value,e.source,codeIndex,codeEvents.length);codeIndex=(codeIndex+1)%codeEvents.length;codeTimer=setTimeout(tickCode,e.delay);}
     function pauseCode(){if(!codeRunning)return;codePaused=!codePaused;if(codePaused){if(codeTimer)clearTimeout(codeTimer);codeTimer=null;$('#simStatus').textContent='仿真已暂停：当前状态已保留，可以观察这一步的 LED 与进制值。';}else{$('#simStatus').textContent='仿真继续：下一步将执行代码中的下一次 P1 更新。';tickCode();}updatePauseButton();}
     function runCode(){stopCode();try{codeEvents=parseCProgram($('#codeEditor').value);}catch(err){$('#simStatus').textContent='代码提示：'+err.message;$('#codeLog').textContent='请参考下方示例，使用 P1 = 0x00 或 P1 = 0xFF 这样的写法。';return;}codeRunning=true;codePaused=false;codeIndex=0;$('.code-lab').classList.add('sim-running');updatePauseButton();tickCode();}
-    function loadBlink(){$('#codeEditor').value=`#include <reg52.h>\nvoid delay(unsigned int t){ unsigned int i,j; for(i=0;i<t;i++) for(j=0;j<120;j++); }\nvoid main(){\n  while(1){\n    P1 = 0x00;   // 8 灯全亮（低电平点亮）\n    delay(300);\n    P1 = 0xFF;   // 8 灯全灭\n    delay(300);\n  }\n}`;runCode();}
-    function loadFlow(){$('#codeEditor').value=`#include <reg52.h>\nvoid delay(unsigned int t){ unsigned int i,j; for(i=0;i<t;i++) for(j=0;j<120;j++); }\nvoid main(){\n  while(1){\n    P1 = 0xFE; delay(180);\n    P1 = 0xFD; delay(180);\n    P1 = 0xFB; delay(180);\n    P1 = 0xF7; delay(180);\n    P1 = 0xEF; delay(180);\n    P1 = 0xDF; delay(180);\n    P1 = 0xBF; delay(180);\n    P1 = 0x7F; delay(180);\n  }\n}`;runCode();}
+    function fillCodeExample(code,label){
+      stopCode();
+      const editor=$('#codeEditor');
+      editor.value=code;
+      editor.dispatchEvent(new Event('input',{bubbles:true}));
+      renderPortBoard('#simLedBoard',0xFF);
+      renderBaseReadouts('sim',0xFF);
+      $('#p1Hex').textContent='0xFF';
+      $('#simStatus').textContent=`已填充${label}，点击“运行仿真”开始执行。`;
+      $('#codeLog').textContent='已加载程序，等待运行。';
+    }
+    function loadBlink(){fillCodeExample(`#include <STC89C52RC.H>
+
+void delay(unsigned int t)
+{
+    unsigned int i,j;
+    for(i=0;i<t;i++)
+        for(j=0;j<120;j++);
+}
+
+void main(void)
+{
+    while(1)
+    {
+        P1 = 0x00;       // 8 灯全亮（低电平点亮）
+        delay(300);
+        P1 = 0xFF;       // 8 灯全灭
+        delay(300);
+    }
+}`, '闪烁示例');}
+    function loadFlow(){fillCodeExample(`//程序: lsd_khs.c
+//功能: 采用库函数实现流水灯的控制，P1口流水灯
+#include <STC89C52RC.H>
+#include <INTRINS.H>
+
+void delay(unsigned int i)
+{
+    while(i--);
+}
+
+void main(void)
+{
+    P1 = 0xFE;       // P1.0 低电平，LED0 亮
+    while(1)
+    {
+        delay(40000);
+        P1 = _crol_(P1,1);  // 循环左移 1 位
+    }
+}`, '课本循环左移流水灯');}
     $('#runCode').addEventListener('click',runCode);$('#stopCode').addEventListener('click',stopCode);$('#pauseCode').addEventListener('click',pauseCode);$('#loadBlink').addEventListener('click',loadBlink);$('#loadFlow').addEventListener('click',loadFlow);
     const classroomExamples={
       'flow-lib':{title:'库函数循环左移流水灯',eyebrow:'项目一 · P1 流水灯',desc:'P1.0 点亮后，每次调用 _crol_(P1,1) 向下一个灯位移动。',code:`//程序: lsd_khs.c
@@ -403,7 +432,7 @@ void main()
     $('#referenceTable').innerHTML=Array.from({length:16},(_,n)=>`<div class="ref-cell ${n>=10?'special':''}"><small>${n}</small><b>${n.toString(16).toUpperCase()}</b></div>`).join('');
     function toast(t){let el=$('#toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
     $$('.mode-tab').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode))); $('#fromInput').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^0-9A-F]/g,'');convert()}); $('#swapBtn').addEventListener('click',()=>{reverse=!reverse;let v=$('#toInput').value;if(v&&v!=='—'){$('#fromInput').value=v}updateLabels();convert()});$('#clearBtn').addEventListener('click',()=>{$('#fromInput').value='';convert();$('#fromInput').focus()});
-     updateLedLab(ledBits);renderPortBoard('#simLedBoard',0xAC);renderBaseReadouts('sim',0xAC);updateKeyView();updateLabels();convert();showPage('learn');
+     updateLedLab(ledBits);renderPortBoard('#simLedBoard',0xFF);renderBaseReadouts('sim',0xFF);updateKeyView();updateLabels();convert();showPage('learn');
   </script>
   <script>
     (function(){
@@ -467,7 +496,7 @@ void main()
       });
       document.querySelectorAll('pre').forEach(pre=>{if(!pre.classList.contains('code-highlight') && /#include|sbit\s|void\s+main/.test(pre.textContent)){pre.classList.add('c51-static-code');pre.innerHTML=highlightC(pre.textContent);}});
       document.addEventListener('click',()=>setTimeout(()=>document.querySelectorAll('textarea.code-editor,textarea.keil-editor').forEach(refresh),0));
-      const st=document.createElement('style');st.textContent='.code-editor-wrap{position:relative;width:100%;min-height:245px}.code-editor-wrap .code-editor,.code-editor-wrap .keil-editor{position:relative;z-index:2;box-sizing:border-box;background:transparent;color:transparent;caret-color:#fff;overflow:auto}.code-highlight{position:absolute;z-index:1;inset:0;box-sizing:border-box;margin:0;padding:14px;border:1px solid #26313e;border-radius:13px;background:#1d2631;color:#e7edf5;font:14px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2;white-space:pre-wrap;overflow:hidden;pointer-events:none}.code-editor::selection,.keil-editor::selection{background:rgba(255,209,102,.28)}.code-lang-badge{position:absolute;z-index:3;right:10px;top:8px;padding:3px 7px;border-radius:6px;background:#334155;color:#ffd166;font:800 10px ui-monospace,monospace;pointer-events:none}.tok-comment{color:#7fba8b;font-style:italic}.tok-pre{color:#c792ea}.tok-keyword{color:#ff7ab2;font-weight:700}.tok-type{color:#82aaff}.tok-function{color:#ffd166}.tok-number{color:#f78c6c}.tok-string{color:#c3e88d}.tok-operator{color:#89ddff}.tok-plain{color:#e7edf5}.c51-static-code .tok-comment{color:#7fba8b}.c51-static-code .tok-pre{color:#c792ea}.c51-static-code .tok-keyword{color:#ff7ab2}.c51-static-code .tok-type{color:#82aaff}.c51-static-code .tok-function{color:#ffd166}.c51-static-code .tok-number{color:#f78c6c}.c51-static-code .tok-string{color:#c3e88d}.c51-static-code .tok-operator{color:#89ddff}';document.head.appendChild(st);
+      const st=document.createElement('style');st.textContent='.code-editor-wrap{position:relative;width:100%;min-height:245px}.code-editor-wrap .code-editor,.code-editor-wrap .keil-editor{position:relative;z-index:2;box-sizing:border-box;background:transparent;color:transparent;caret-color:#fff;overflow:auto}.code-highlight{position:absolute;z-index:1;inset:0;box-sizing:border-box;margin:0;padding:14px;border:1px solid #26313e;border-radius:13px;background:#1d2631;color:#e7edf5;font:14px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2;white-space:pre-wrap;overflow:hidden;pointer-events:none}.code-editor::placeholder,.keil-editor::placeholder{color:#94a3b8;opacity:1}.code-editor::selection,.keil-editor::selection{background:rgba(255,209,102,.28)}.code-lang-badge{position:absolute;z-index:3;right:10px;top:8px;padding:3px 7px;border-radius:6px;background:#334155;color:#ffd166;font:800 10px ui-monospace,monospace;pointer-events:none}.tok-comment{color:#7fba8b;font-style:italic}.tok-pre{color:#c792ea}.tok-keyword{color:#ff7ab2;font-weight:700}.tok-type{color:#82aaff}.tok-function{color:#ffd166}.tok-number{color:#f78c6c}.tok-string{color:#c3e88d}.tok-operator{color:#89ddff}.tok-plain{color:#e7edf5}.c51-static-code .tok-comment{color:#7fba8b}.c51-static-code .tok-pre{color:#c792ea}.c51-static-code .tok-keyword{color:#ff7ab2}.c51-static-code .tok-type{color:#82aaff}.c51-static-code .tok-function{color:#ffd166}.c51-static-code .tok-number{color:#f78c6c}.c51-static-code .tok-string{color:#c3e88d}.c51-static-code .tok-operator{color:#89ddff}';document.head.appendChild(st);
     })();
   </script>
 </body>
