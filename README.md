@@ -93,7 +93,7 @@
 
 在线教学网站由 Sites 托管：
 
-https://ye-ye-ban-base-converter.cuddly-stork-1579.chatgpt.site
+https://ye-ye-ban-base-converter.zcq991029.chatgpt.site
 
 GitHub 仓库只用于公开保存源码、素材和版本记录，不启用 GitHub Pages。
 
