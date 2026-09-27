@@ -106,7 +106,7 @@
     <section class="page-panel sim-page" id="p1Page" data-page-panel="p1" hidden>
       <div class="page-intro"><span class="eyebrow">STC89C52RC · P1 端口</span><h2>写 C 代码，马上看见灯光</h2><p>当前端口值会同时显示二进制、十进制与十六进制。0 为低电平，对应 LED 点亮。</p></div>
       <div class="card sim-led-card"><div class="lab-head"><h3>8 个 LED · P1.7 → P1.0</h3><span>代码运行时实时更新</span></div><div class="led-board" id="simLedBoard"></div><div class="base-readouts"><div><small>二进制 BIN</small><strong id="simBin">1010 1100</strong></div><div><small>十进制 DEC</small><strong id="simDec">172</strong></div><div><small>十六进制 HEX</small><strong id="simHex">AC</strong></div></div><p class="sim-explain" id="simExplain">高四位 1010 → A，低四位 1100 → C；所以 P1 = AC₁₆。</p></div>
-        <section class="code-lab" aria-label="P1端口C语言仿真工作台"><div class="code-lab-head"><div><h3>P1 端口 C 代码仿真</h3><p>支持真实 Keil C51 的头文件、延时和 INTRINS.H 循环移位示例，改完代码即可反复演示。</p></div><span class="chip-tag">STC89C52RC · PORT 1</span></div><div class="code-grid"><div class="code-box"><textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="C语言代码编辑器">//程序: lsd_khs.c
+        <section class="code-lab" aria-label="P1端口C语言仿真工作台"><div class="code-lab-head"><div><h3>P1 端口 C 代码仿真</h3><p>按 Keil C51 的 P1 端口语义执行赋值、按位运算、delay() 和 INTRINS.H 循环移位，改完代码即可反复演示。</p></div><span class="chip-tag">STC89C52RC · PORT 1</span></div><div class="code-grid"><div class="code-box"><textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="C语言代码编辑器">//程序: lsd_khs.c
 //功能: 采用库函数实现流水灯的控制，P1口流水灯
 #include &lt;STC89C52RC.H&gt;
 #include &lt;INTRINS.H&gt;
@@ -141,7 +141,7 @@ void main(){
     P1 = 0xFB;  // P1.2 低电平，LED2 亮
     delay(300);
   }
-}</textarea><div class="code-actions"><button class="code-btn primary" id="runCode">▶ 运行仿真</button><button class="code-btn dark" id="stopCode">■ 停止</button><button class="code-btn" id="loadBlink">加载闪烁示例</button><button class="code-btn" id="loadFlow">加载流水灯示例</button></div></div><div class="sim-panel"><h4>开发板 P1 引脚映射</h4><div class="pin-map"></div><div class="p1-value"><span>当前 P1</span><strong id="p1Hex">0xAC</strong></div><div class="sim-status" id="simStatus">等待运行代码。当前支持 P1 赋值、取反、移位、按位运算和 delay()。</div><div class="code-log" id="codeLog">仿真日志：尚未运行</div><p class="code-note">说明：这是课堂快速仿真器，不替代 Keil 编译器；先用它看懂 P1 端口逻辑，再下载到真实 STC89C52RC 开发板。</p></div></div></section>
+}</textarea><div class="code-actions"><button class="code-btn primary" id="runCode">▶ 运行仿真</button><button class="code-btn dark" id="stopCode">■ 停止</button><button class="code-btn" id="loadBlink">加载闪烁示例</button><button class="code-btn" id="loadFlow">加载流水灯示例</button></div></div><div class="sim-panel"><h4>开发板 P1 引脚映射</h4><div class="pin-map"></div><div class="p1-value"><span>当前 P1</span><strong id="p1Hex">0xAC</strong></div><div class="sim-status" id="simStatus">等待运行代码。当前支持 P1 赋值、取反、移位、按位运算、delay() 和 _crol_/_cror_。</div><div class="code-log" id="codeLog">仿真日志：尚未运行</div><p class="code-note">说明：这是按 Keil C51 语义实现的 P1 教学子集，不替代完整 Keil 编译器；最终仍要生成 HEX 并下载到真实 STC89C52RC 开发板。</p></div></div></section>
     </section>
     <section class="page-panel code-examples-page" id="codesPage" data-page-panel="codes" hidden>
       <div class="page-intro"><span class="eyebrow">KEIL C51 · 独立代码练习页</span><h2>课堂代码示例</h2><p>每次只打开一个程序，代码按 Keil 习惯分行显示；先读懂，再修改，再下载到开发板。</p></div>
@@ -228,14 +228,16 @@ void main(void){ while(1){ LED=0; delay(500); LED=1; delay(500); } }</pre></div>
     function renderBinaryTutorial(raw,dec){let padded=raw.padStart(Math.ceil(raw.length/4)*4,'0'),groups=padded.match(/.{4}/g)||['0000'],weights=[8,4,2,1],html=groups.map((g,gi)=>{let chosen=weights.filter((w,i)=>g[i]==='1');return `<div class="binary-group-title">第 ${gi+1} 组：${g}₂</div><div class="weight-visual"><div class="weight-line">${weights.map((w,i)=>`<span class="${g[i]==='1'?'active':''}">${w}</span>`).join('')}</div><div class="digit-line">${[...g].map(v=>`<span class="${v==='1'?'on':''}">${v}</span>`).join('')}</div><div class="weight-caption">有 1 的位置，对应位权直接拿下来</div></div><div class="take-sum">${chosen.length?chosen.join(' + ')+' = ':''}<b>${parseInt(g,2)}</b></div>`}).join('');$('#stepsList').innerHTML=`<div class="step"><span class="step-num">1</span><span>把二进制切成每 4 位一组，每组上方放 <code>8、4、2、1</code>：</span></div><div class="step"><span class="step-num">2</span><span>${html}</span></div><div class="step"><span class="step-num">3</span><span>把每组结果拼回十进制：<code>${groups.map(g=>parseInt(g,2)).join('、')}</code>；完整数值是 <code>${dec}</code>。</span></div>`;}
     let codeTimer=null,codeRunning=false,codeEvents=[];
     function stripCComments(code){return code.replace(/\/\/.*$/gm,'').replace(/\/\*[\s\S]*?\*\//g,'');}
+    function rotateP1(value,direction,steps){let n=Number(steps)%8;if(!n)return value&255;return direction==='left'?(((value<<n)|(value>>(8-n)))&255):(((value>>n)|(value<<(8-n)))&255);}
     function parseP1Expr(expr,state){
       let e=expr.trim().replace(/\s+/g,' '), old=state.value;
-      let rotate=e.match(/^_crol_\(\s*P1\s*,\s*(\d+)\s*\)$/i);
-      if(rotate){let n=Number(rotate[1])%8;return ((old<<n)|(old>>(8-n)))&255;}
-      let rotateRight=e.match(/^_cror_\(\s*P1\s*,\s*(\d+)\s*\)$/i);
-      if(rotateRight){let n=Number(rotateRight[1])%8;return ((old>>n)|(old<<(8-n)))&255;}
+      let rotate=e.match(/^_crol_\(\s*P1\s*,\s*(\d+)(?:u|l)*\s*\)$/i);
+      if(rotate)return rotateP1(old,'left',rotate[1]);
+      let rotateRight=e.match(/^_cror_\(\s*P1\s*,\s*(\d+)(?:u|l)*\s*\)$/i);
+      if(rotateRight)return rotateP1(old,'right',rotateRight[1]);
+      e=e.replace(/\b(0x[0-9a-f]+|\d+)(?:u|l)+\b/gi,'$1');
       e=e.replace(/\bP1\b/g,String(old));
-      if(!/^[0-9A-Fa-fxX ()~&|^<>+\-*/]+$/.test(e))throw new Error('暂不支持这条 P1 表达式；目前支持 P1 赋值、_crol_(P1,1)、_cror_(P1,1) 和按位运算');
+      if(!/^[0-9A-Fa-fxX ()~&|^<>+\-*/]+$/.test(e))throw new Error('暂不支持这条 P1 表达式；目前支持 P1 赋值、_crol_(P1,n)、_cror_(P1,n) 和按位运算');
       if(/<<|>>/.test(e)){let m=e.match(/^\(?\s*(\d+)\s*(<<|>>)\s*(\d+)\s*\)?$/);if(!m)throw new Error('移位表达式请写成 P1 << 1 或 P1 >> 1');let n=Number(m[1]),shift=Number(m[3]);return (m[2]==='<<'?n<<shift:n>>shift)&255;}
       if(/^~\s*\(?\s*\d+\s*\)?$/.test(e)){let n=Number(e.replace(/[^0-9]/g,''));return (~n)&255;}
       if(!/^[\dA-Fa-fxX ()~&|^+\-*/]+$/.test(e))throw new Error('表达式包含暂不支持的字符');
@@ -244,10 +246,10 @@ void main(void){ while(1){ LED=0; delay(500); LED=1; delay(500); } }</pre></div>
       return Number(value)&255;
     }
     function parseCProgram(source){
-      let code=stripCComments(source).replace(/\r/g,''), events=[], state={value:255}, re=/(P1\s*(?:=|\|=|&=|\^=)\s*[^;]+;|delay\s*\(\s*\d+\s*\)\s*;?)/gi,m,last=null;
+      let code=stripCComments(source).replace(/\r/g,''), events=[], state={value:255}, re=/(P1\s*(?:=|\|=|&=|\^=)\s*[^;]+;|delay\s*\(\s*\d+\s*\)\s*;?)/gi,m,last=null,currentDelay=280,lastRotationRange=null;
       if(/\bP[023]\b/.test(code))throw new Error('当前课堂仿真只开放 P1.0～P1.7，先不要使用 P0/P2/P3');
-      while((m=re.exec(code))){let statement=m[0].trim();if(/^delay/i.test(statement)){if(last)last.delay=Math.max(120,Math.min(1200,Number(statement.match(/\d+/)[0])));continue;}
-        let op=statement.match(/P1\s*(=|\|=|&=|\^=)\s*([^;]+)/i);if(!op)continue;let val=parseP1Expr(op[2],state);if(op[1]==='|=')val=state.value|val;if(op[1]==='&=')val=state.value&val;if(op[1]==='^=')val=state.value^val;state.value=val&255;last={value:state.value,delay:280,source:statement};events.push(last);if(/_crol_|_cror_/i.test(op[2])){for(let k=1;k<8;k++){state.value=/_crol_/i.test(op[2])?(((state.value<<1)|(state.value>>7))&255):(((state.value>>1)|(state.value<<7))&255);events.push({value:state.value,delay:280,source:statement});}last=events[events.length-1];}}
+      while((m=re.exec(code))){let statement=m[0].trim();if(/^delay/i.test(statement)){currentDelay=Math.max(120,Math.min(1200,Number(statement.match(/\d+/)[0])));if(last)last.delay=currentDelay;if(lastRotationRange){for(let i=lastRotationRange[0];i<=lastRotationRange[1];i++)events[i].delay=currentDelay;lastRotationRange=null;}continue;}
+        lastRotationRange=null;let op=statement.match(/P1\s*(=|\|=|&=|\^=)\s*([^;]+)/i);if(!op)continue;let expression=op[2].trim(),before=state.value,val=parseP1Expr(expression,state);if(op[1]==='|=')val=state.value|val;if(op[1]==='&=')val=state.value&val;if(op[1]==='^=')val=state.value^val;state.value=val&255;last={value:state.value,delay:currentDelay,source:statement};events.push(last);let rotate=expression.match(/^_(crol|cror)_\(\s*P1\s*,\s*(\d+)(?:u|l)*\s*\)$/i),laterP1=/P1\s*(?:=|\|=|&=|\^=)/i.test(code.slice(re.lastIndex));if(rotate&&op[1]==='='&&!laterP1){let next=state.value,n=Number(rotate[2])%8,start=events.length;if(n){while((next=rotateP1(next,rotate[1].toLowerCase()==='crol'?'left':'right',n))!==before){last={value:next,delay:currentDelay,source:statement};events.push(last);}}lastRotationRange=[start,events.length-1];}}
       if(!events.length)throw new Error('没有找到 P1 赋值语句，例如：P1 = 0xFE; 或 P1 = _crol_(P1,1);');
       return events;
     }
@@ -258,6 +260,7 @@ void main(void){ while(1){ LED=0; delay(500); LED=1; delay(500); } }</pre></div>
     function runCode(){stopCode();try{codeEvents=parseCProgram($('#codeEditor').value);}catch(err){$('#simStatus').textContent='代码提示：'+err.message;$('#codeLog').textContent='请参考下方示例，使用 P1 = 0x00 或 P1 = 0xFF 这样的写法。';return;}codeRunning=true;$('.code-lab').classList.add('sim-running');let i=0;const tick=()=>{if(!codeRunning)return;let e=codeEvents[i];setP1Value(e.value,e.source,i,codeEvents.length);i=(i+1)%codeEvents.length;codeTimer=setTimeout(tick,e.delay);};tick();}
     function loadBlink(){$('#codeEditor').value=`#include <reg52.h>\nvoid delay(unsigned int t){ unsigned int i,j; for(i=0;i<t;i++) for(j=0;j<120;j++); }\nvoid main(){\n  while(1){\n    P1 = 0x00;   // 8 灯全亮（低电平点亮）\n    delay(300);\n    P1 = 0xFF;   // 8 灯全灭\n    delay(300);\n  }\n}`;runCode();}
     function loadFlow(){$('#codeEditor').value=`#include <reg52.h>\nvoid delay(unsigned int t){ unsigned int i,j; for(i=0;i<t;i++) for(j=0;j<120;j++); }\nvoid main(){\n  while(1){\n    P1 = 0xFE; delay(180);\n    P1 = 0xFD; delay(180);\n    P1 = 0xFB; delay(180);\n    P1 = 0xF7; delay(180);\n    P1 = 0xEF; delay(180);\n    P1 = 0xDF; delay(180);\n    P1 = 0xBF; delay(180);\n    P1 = 0x7F; delay(180);\n  }\n}`;runCode();}
+    $('#runCode').addEventListener('click',runCode);$('#stopCode').addEventListener('click',stopCode);$('#loadBlink').addEventListener('click',loadBlink);$('#loadFlow').addEventListener('click',loadFlow);
     const classroomExamples={
       'flow-lib':{title:'库函数循环左移流水灯',eyebrow:'项目一 · P1 流水灯',desc:'P1.0 点亮后，每次调用 _crol_(P1,1) 向下一个灯位移动。',code:`//程序: lsd_khs.c
 //功能: 采用库函数实现流水灯的控制，P1口流水灯
@@ -370,9 +373,10 @@ void main()
     };
     let standaloneTimer=null,standaloneKey='flow-lib',standaloneS2=false,standaloneS3=false;
     function standaloneLedMarkup(value){let bits=value.toString(2).padStart(8,'0');return '<div class="standalone-led">'+[...bits].map((v,i)=>'<div class="led-cell"><span class="led '+(v==='0'?'on':'')+'"></span><small>P1.'+(7-i)+' · '+v+'</small></div>').join('')+'</div>';}
+    function standalonePortFrame(event,index,total){let hex=event.value.toString(16).toUpperCase().padStart(2,'0');return '<h4>端口仿真 · 当前 P1 = 0x'+hex+'</h4><p>第 '+(index+1)+'/'+total+' 步：<code>'+event.source.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code>；低电平 0 点亮。</p>'+standaloneLedMarkup(event.value);}
     function renderStandaloneOutput(key){
       let out=$('#standaloneOutput');
-      if(key==='flow-lib'||key==='blink-pair'){out.innerHTML='<h4>端口仿真</h4><p>低电平 0 点亮；点击“运行本页仿真”查看代码写入 P1 后的连续状态。</p>'+standaloneLedMarkup(key==='flow-lib'?0xFE:0xD3);return;}
+      if(key==='flow-lib'||key==='blink-pair'){let initial=255;try{let preview=parseCProgram($('#standaloneCode').value);if(preview[0])initial=preview[0].value;}catch(e){}out.innerHTML='<h4>端口仿真</h4><p>低电平 0 点亮；运行时严格按代码中的 P1 赋值、delay() 和 _crol_/_cror_ 顺序更新。</p>'+standaloneLedMarkup(initial);return;}
       if(key==='buzzer'){out.innerHTML='<h4>S2 按键与蜂鸣器仿真</h4><div class="standalone-buzzer '+(standaloneS2?'active':'')+'"><div class="buzzer-device"><span>BUZZER</span><i></i></div><div class="sound-waves"><span>)))</span><span>)))</span><span>)))</span></div><div><strong>'+(standaloneS2?'发声中':'静音')+'</strong><small>S2=P3.4 · 按下为 0，BEEP=P2.3</small></div><button class="code-btn" id="standaloneBuzzerToggle">按下 / 松开 S2</button></div>';$('#standaloneBuzzerToggle').addEventListener('click',()=>{standaloneS2=!standaloneS2;renderStandaloneOutput(key);});return;}
       if(key==='key-led'){out.innerHTML='<h4>S2 按键与 LED 仿真</h4><p>S2=P3.4；按下时 LED=P1.0 输出 0。</p><button class="code-btn" id="standaloneKeyToggle">按下 / 松开 S2</button>'+standaloneLedMarkup(standaloneS2?0xFE:0xFF);$('#standaloneKeyToggle').addEventListener('click',()=>{standaloneS2=!standaloneS2;renderStandaloneOutput(key);});return;}
       out.innerHTML='<h4>S2 / S3 转向灯仿真</h4><p>S2=P3.4 左转，S3=P3.5 右转；按下后对应两盏灯点亮。</p><button class="code-btn" id="standaloneS2Toggle">按下 S2</button><button class="code-btn" id="standaloneS3Toggle">按下 S3</button>'+standaloneLedMarkup((standaloneS2?0xFC:0xFF)&(standaloneS3?0xF3:0xFF));$('#standaloneS2Toggle').addEventListener('click',()=>{standaloneS2=!standaloneS2;renderStandaloneOutput(key);});$('#standaloneS3Toggle').addEventListener('click',()=>{standaloneS3=!standaloneS3;renderStandaloneOutput(key);});
@@ -381,7 +385,7 @@ void main()
     $$('.code-example-tab').forEach(t=>t.addEventListener('click',()=>renderStandaloneExample(t.dataset.codeExample)));
     $('#resetStandalone').addEventListener('click',()=>renderStandaloneExample(standaloneKey));
     $('#copyStandalone').addEventListener('click',async()=>{await navigator.clipboard?.writeText($('#standaloneCode').value);toast('代码已复制，可以粘贴到 Keil');});
-    $('#runStandalone').addEventListener('click',()=>{if(standaloneKey==='flow-lib'||standaloneKey==='blink-pair'){clearInterval(standaloneTimer);let events;try{events=parseCProgram($('#standaloneCode').value);}catch(e){$('#standaloneOutput').innerHTML='<h4>代码提示</h4><p>'+e.message+'</p>';return;}let i=0;standaloneTimer=setInterval(()=>{let e=events[i++%events.length];$('#standaloneOutput').innerHTML='<h4>端口仿真 · 当前 P1 = 0x'+e.value.toString(16).toUpperCase().padStart(2,'0')+'</h4><p>代码状态按顺序更新，低电平 0 点亮。</p>'+standaloneLedMarkup(e.value);},300);}else{renderStandaloneOutput(standaloneKey);}});
+    $('#runStandalone').addEventListener('click',()=>{if(standaloneKey==='flow-lib'||standaloneKey==='blink-pair'){clearInterval(standaloneTimer);let events;try{events=parseCProgram($('#standaloneCode').value);}catch(e){$('#standaloneOutput').innerHTML='<h4>代码提示</h4><p>'+e.message+'</p>';return;}let i=0,frame=()=>{let index=i++%events.length;$('#standaloneOutput').innerHTML=standalonePortFrame(events[index],index,events.length);};frame();standaloneTimer=setInterval(frame,300);}else{renderStandaloneOutput(standaloneKey);}});
     renderStandaloneExample('flow-lib');
     function showPage(page){$$('[data-page-panel]').forEach(panel=>panel.hidden=panel.dataset.pagePanel!==page);$$('.page-tab').forEach(tab=>{let active=tab.dataset.page===page;tab.classList.toggle('active',active);if(active)tab.setAttribute('aria-current','page');else tab.removeAttribute('aria-current');});if(page!=='p1'&&codeRunning)stopCode();window.scrollTo({top:0,behavior:'instant'});}
     $$('.page-tab').forEach(tab=>tab.addEventListener('click',()=>showPage(tab.dataset.page)));
