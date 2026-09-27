@@ -198,7 +198,7 @@ void main(){
     $('#referenceTable').innerHTML=Array.from({length:16},(_,n)=>`<div class="ref-cell ${n>=10?'special':''}"><small>${n}</small><b>${n.toString(16).toUpperCase()}</b></div>`).join('');
     function toast(t){let el=$('#toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
     $$('.mode-tab').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode))); $('#fromInput').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^0-9A-F]/g,'');convert()}); $('#swapBtn').addEventListener('click',()=>{reverse=!reverse;let v=$('#toInput').value;if(v&&v!=='—'){$('#fromInput').value=v}updateLabels();convert()});$('#clearBtn').addEventListener('click',()=>{$('#fromInput').value='';convert();$('#fromInput').focus()});
-    updateLedLab(ledBits);updateLabels();convert();showPage('learn');
+    updateLedLab(ledBits);renderPortBoard('#simLedBoard',0xAC);renderBaseReadouts('sim',0xAC);updateKeyView();updateLabels();convert();showPage('learn');
   </script>
 </body>
 </html>
