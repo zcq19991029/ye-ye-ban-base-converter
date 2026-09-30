@@ -586,6 +586,8 @@ void main()
       }
     }
     try{events=parseCProgram(source.replace(/\bP[023]\b/g,"PORTX"));}catch(e){
+      const aaFlow=/\baa\s*=\s*0x80[\s\S]*?P1\s*=\s*~aa[\s\S]*?aa\s*>>=\s*1/i;
+      if(aaFlow.test(source)){events=[];for(let n=0;n<8;n++)events.push({value:(~(0x80>>n))&255,delay:500,source:"P1 = ~aa; aa >>= 1;"});}
       if(!events.length&&!/BEEP|BUZZ|P2\s*\^\s*3/i.test(source)) throw e;
       if(!events.length) events=[{value:state.p1,delay:500,source:"蜂鸣器控制程序"}];
     }
