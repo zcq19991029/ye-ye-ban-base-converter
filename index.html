@@ -574,9 +574,19 @@ void main()
     if(!/#include[\s\S]*<(?:STC89C52RC|REG51|REG52|INTRINS)\.H>/i.test(source)) throw new Error("缺少 Keil 头文件，请包含 STC89C52RC.H、REG51.H 或 REG52.H");
     if(!/void\s+main\s*\(/i.test(source)) throw new Error("缺少 void main() 主函数");
     let events=[];
+    const bitNames={};
+    let bm;
+    const bitRe=/\bsbit\s+([A-Za-z_]\w*)\s*=\s*P1\s*\^\s*([0-7])\s*;/gi;
+    while((bm=bitRe.exec(source))) bitNames[bm[1]]=Number(bm[2]);
+    if(Object.keys(bitNames).length){
+      const bitRe2=/\b([A-Za-z_]\w*)\s*=\s*([01])\s*;/g; let am;
+      while((am=bitRe2.exec(source))){
+        if(bitNames[am[1]]!==undefined){const b=bitNames[am[1]], on=Number(am[2]);state.p1=on?(state.p1|(1<<b)):(state.p1&~(1<<b));events.push({value:state.p1&255,delay:500,source:am[0]});}
+      }
+    }
     try{events=parseCProgram(source.replace(/\bP[023]\b/g,"PORTX"));}catch(e){
-      if(!/BEEP|BUZZ|P2\s*\^\s*3/i.test(source)) throw e;
-      events=[{value:state.p1,delay:500,source:"蜂鸣器控制程序"}];
+      if(!events.length&&!/BEEP|BUZZ|P2\s*\^\s*3/i.test(source)) throw e;
+      if(!events.length) events=[{value:state.p1,delay:500,source:"蜂鸣器控制程序"}];
     }
     tx1Events=events; tx1Compiled=true; return events;
   }
