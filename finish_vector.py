@@ -2,7 +2,8 @@ from pathlib import Path
 import re, subprocess, tarfile, json, sys, base64
 root=Path(__file__).parent
 if len(sys.argv)>1 and sys.argv[1]=='publish':
-    c=json.loads(sys.stdin.readline())
+    import getpass
+    c=json.loads(getpass.getpass('Sites credential JSON (hidden): '))
     header='Authorization: Bearer '+c['token']
     proc=subprocess.run(['git','-c','http.extraHeader='+header,'push',c['remote_url'],'HEAD:main'],cwd=root,capture_output=True,text=True)
     if proc.returncode: raise SystemExit('Sites source push failed')
