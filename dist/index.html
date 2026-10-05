@@ -215,7 +215,7 @@ void main(void){ Timer0Init(); while(1){} }</pre><p class="code-explain">定时�
       <div class="tutorial-checklist"><h3>项目一至项目五：头文件怎么选</h3><ul><li><code>STC89C52RC.H</code>：开发板芯片专用寄存器定义，优先用于 STC89C52RC 工程。</li><li><code>REG51.H</code> 或 <code>REG52.H</code>：传统 51 兼容寄存器定义；如果老师发的工程模板指定了其中一个，就保持模板一致。</li><li><code>INTRINS.H</code>：Keil C51 内部函数库，提供 <code>_crol_()</code> 循环左移、<code>_cror_()</code> 循环右移等函数。</li><li>项目一 P1 流水灯会用到芯片头文件 + <code>INTRINS.H</code>；项目二至项目五至少需要芯片头文件，定时器项目还要使用定时器/中断寄存器定义。</li></ul></div>
       <div class="tutorial-checklist"><h3>课堂验收清单</h3><ul><li>工程树中能看到 LED.c，编译窗口显示 0 Error(s)。</li><li>Objects 文件夹里确实出现 .hex，记录工程名和生成时间。</li><li>STC-ISP 选择正确芯片与串口，下载成功后 P1 LED 按程序亮灭。</li><li>学生能说清：C 代码 → 编译器/链接器 → HEX → 下载器 → 单片机执行。</li></ul></div>
     </section>
-    <div class="footer-note">小提示：二进制只有 0 和 1；十六进制会用到 A～F 哦。<br><span>© 2026 夜夜班 · 夜夜班的进制转换练习 Sites版 · 版本 v24</span></div>
+    <div class="footer-note">小提示：二进制只有 0 和 1；十六进制会用到 A～F 哦。<br><span>© 2026 夜夜班 · 夜夜班的进制转换练习 Sites版 · 版本 v27</span></div>
     <section class="page-panel arena-page" id="arenaPage" data-page-panel="arena" hidden>
       <div class="page-intro"><span class="eyebrow">进制竞技场 · 账号管理</span><h2>班级账号导入与离线竞技</h2><p>教师只导入班级、学号、姓名；课程成绩不会被读取。学生可在线同步，也可离线游玩后再同步。</p></div>
       <div class="arena-layout">
